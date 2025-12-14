@@ -397,11 +397,21 @@ When responding to the user:
 2. Implement the code
 3. Write the tests
 4. Run all checks (`pnpm verify`)
-5. Report results:
+5. Run production build (`pnpm build`)
+6. **If all checks and build pass, AUTOMATICALLY commit and push:**
+   ```bash
+   git add .
+   git commit -m "<descriptive commit message>"
+   git push origin main
+   ```
+7. Report results:
    - What was implemented
    - Which files were modified
    - Confirmation that all checks passed
-6. If part of a larger plan, ask if you should proceed to the next chunk
+   - Confirmation that changes were committed and pushed
+8. If part of a larger plan, ask if you should proceed to the next chunk
+
+**IMPORTANT: You MUST commit and push after every successful implementation. Do not wait for the user to ask.**
 
 DO NOT include:
 - Unrequested explanations
