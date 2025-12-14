@@ -440,5 +440,161 @@ If you're new to coding, here's how to work with Claude Code:
 
 ---
 
+## 15. DEPLOYMENT WORKFLOW (CRITICAL)
+
+This project is configured for automatic deployment to Vercel. **You MUST follow this exact workflow** for deployments to succeed.
+
+### Deployment Configuration
+
+The project is configured with:
+- **Node.js version**: 20 (specified in `.nvmrc` and `package.json` engines)
+- **Package manager**: pnpm (required, enforced in `vercel.json`)
+- **Build command**: `pnpm verify && pnpm build` (runs ALL checks before building)
+- **Deployment branch**: `main` only (no preview deployments)
+
+### CRITICAL: Pre-Deployment Checklist
+
+**BEFORE committing and pushing, you MUST verify:**
+
+1. Run all checks locally:
+   ```bash
+   pnpm verify
+   ```
+
+2. Ensure all checks pass:
+   - ✓ ESLint (no errors, no warnings)
+   - ✓ TypeScript (no type errors)
+   - ✓ Vitest (all tests passing)
+
+3. Test production build locally:
+   ```bash
+   pnpm build
+   ```
+
+**If ANY check fails, DO NOT commit or push. Fix the issues first.**
+
+### Deployment Process
+
+When all checks pass:
+
+1. **Stage changes:**
+   ```bash
+   git add .
+   ```
+
+2. **Commit with descriptive message:**
+   ```bash
+   git commit -m "feat: add user authentication with login and signup
+
+   - Created login form component with validation
+   - Added signup flow with email verification
+   - Implemented auth API routes
+   - Added comprehensive test coverage
+
+   🤖 Generated with Claude Code
+
+   Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+   ```
+
+3. **Push to main branch:**
+   ```bash
+   git push origin main
+   ```
+
+4. **Vercel will automatically:**
+   - Detect the push to main
+   - Install dependencies with pnpm
+   - Run `pnpm verify` (lint + typecheck + test)
+   - Run `pnpm build` (production build)
+   - Deploy to production
+   - Provide a deployment URL
+
+### What Happens on Vercel
+
+Vercel runs this exact sequence:
+```bash
+corepack enable          # Enable pnpm
+pnpm install             # Install dependencies
+pnpm verify              # Run lint + typecheck + test
+pnpm build               # Build for production
+```
+
+**If any step fails, the deployment will fail and roll back.**
+
+### Deployment Rules
+
+1. **ALWAYS run `pnpm verify` locally before pushing**
+   - This prevents failed deployments
+   - Saves time and deployment minutes
+   - Ensures production quality
+
+2. **NEVER push code with failing tests**
+   - Deployments will fail on Vercel
+   - User will not see changes
+   - Wastes deployment resources
+
+3. **NEVER skip the build test locally**
+   - Some issues only appear during build
+   - Catch them before pushing
+
+4. **Use descriptive commit messages**
+   - Explain what was changed
+   - Include which files/features were affected
+   - Makes rollbacks easier if needed
+
+### Commit Message Format
+
+Use this template for all commits:
+
+```
+<type>: <short description>
+
+<detailed description of changes>
+- Bullet point 1
+- Bullet point 2
+- Bullet point 3
+
+<optional: breaking changes, migration notes>
+
+🤖 Generated with Claude Code
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>
+```
+
+Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
+
+### Troubleshooting Failed Deployments
+
+If deployment fails on Vercel:
+
+1. **Check Vercel deployment logs** - The user can see these on Vercel dashboard
+2. **Identify which step failed:**
+   - Install? → Check `package.json` dependencies
+   - Verify? → Check lint/typecheck/test errors
+   - Build? → Check Next.js build errors
+
+3. **Fix locally:**
+   ```bash
+   pnpm verify && pnpm build
+   ```
+
+4. **Commit and push the fix:**
+   ```bash
+   git add .
+   git commit -m "fix: resolve deployment issue with <description>"
+   git push origin main
+   ```
+
+### Important Notes
+
+- Only pushes to `main` branch trigger deployments
+- Preview deployments are disabled (configured in `vercel.json`)
+- Tests are mandatory - deployment will fail if tests fail
+- The user will see the deployment URL in Vercel dashboard
+- Typical deployment time: 2-5 minutes
+
+---
+
 You are operating inside a constrained, production-grade system.
 Respect the system. Protect the user. Build incrementally.
+Always verify before deploying.
