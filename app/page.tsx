@@ -1,22 +1,29 @@
 import { Globe } from 'lucide-react'
+import Image from 'next/image'
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-black p-6">
       <div className="text-center">
-        <h1 className="text-6xl font-bold">Vibecode</h1>
-        <p className="mt-4 text-xl text-muted-foreground">
+        <Image
+          src="/jigjoy.svg"
+          alt="Jigjoy Logo"
+          width={150}
+          height={150}
+          className="mx-auto"
+        />
+        <p className="mt-4 text-xl text-gray-400">
           AI-safe Next.js template
         </p>
 
         <div className="mt-12">
-          <p className="mb-6 text-lg font-medium">Join our community</p>
+          <p className="mb-6 text-lg font-medium text-white">Join our community</p>
           <div className="flex items-center justify-center gap-6">
             <a
               href="https://discord.gg/xQR6DNtY"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-opacity hover:opacity-80"
+              className="text-white transition-opacity hover:opacity-80"
               aria-label="Join our Discord"
             >
               <svg
@@ -32,7 +39,7 @@ export default function HomePage() {
               href="https://github.com/jigjoy-io"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-opacity hover:opacity-80"
+              className="text-white transition-opacity hover:opacity-80"
               aria-label="Visit our GitHub"
             >
               <svg
@@ -48,7 +55,7 @@ export default function HomePage() {
               href="https://jigjoy.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-opacity hover:opacity-80"
+              className="text-white transition-opacity hover:opacity-80"
               aria-label="Visit our website"
             >
               <Globe className="h-8 w-8" />
