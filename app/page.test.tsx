@@ -3,10 +3,11 @@ import { render, screen } from '@testing-library/react'
 import HomePage from './page'
 
 describe('HomePage', () => {
-  it('should render the main heading', () => {
+  it('should render the Jigjoy logo', () => {
     render(<HomePage />)
-    const heading = screen.getByRole('heading', { name: /vibecode/i })
-    expect(heading).toBeDefined()
+    const logo = screen.getByAltText(/jigjoy logo/i)
+    expect(logo).toBeDefined()
+    expect(logo.getAttribute('src')).toBe('/jigjoy.svg')
   })
 
   it('should render the subtitle', () => {
