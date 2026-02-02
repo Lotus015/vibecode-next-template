@@ -15,6 +15,8 @@ No coding knowledge required. Just describe your idea, and Claude handles the im
 
 - **Next.js 16** - React framework with App Router
 - **React 19** - Latest React with Server Components
+- **Payload CMS 3.x** - Headless CMS with admin panel
+- **PostgreSQL** - Database for content storage
 - **TypeScript** - Type-safe code (strict mode)
 - **Tailwind CSS v4** - Utility-first styling
 - **shadcn/ui** - 53+ pre-built components
@@ -38,16 +40,21 @@ Before you start, you need:
    pnpm --version   # Should be v10.x.x or higher
    ```
 
-3. **Git**
+3. **PostgreSQL database**
+   - Local: Install via Homebrew (`brew install postgresql`) or [postgresql.org](https://www.postgresql.org/download/)
+   - Cloud: [Neon](https://neon.tech), [Supabase](https://supabase.com), or [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres)
+   - Docker: `docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=password postgres`
+
+4. **Git**
    ```bash
    git --version
    ```
 
-4. **Claude Code** (optional but recommended)
+5. **Claude Code** (optional but recommended)
    - Install from [claude.com/claude-code](https://claude.com/claude-code)
    - Provides AI-powered development assistance
 
-5. **Vercel Account** (for deployment)
+6. **Vercel Account** (for deployment)
    - Sign up at [vercel.com](https://vercel.com)
    - Connect your GitHub repository
 
@@ -64,7 +71,40 @@ cd vibecode-next-template
 pnpm install
 ```
 
-### 2. Start Development
+### 2. Configure Environment Variables
+
+```bash
+# Copy the example environment file
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your settings:
+
+```bash
+# Required: PostgreSQL connection string
+DATABASE_URL=postgresql://postgres:password@localhost:5432/payload
+
+# Required: Secret key for Payload (generate with: openssl rand -base64 32)
+PAYLOAD_SECRET=your-secret-key-here
+
+# Application URL (use localhost for development)
+NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+
+# Application name (optional)
+NEXT_PUBLIC_APP_NAME=My App
+```
+
+### 3. Set Up Database
+
+```bash
+# Create the database (if using local PostgreSQL)
+createdb payload
+
+# Or with psql:
+psql -c "CREATE DATABASE payload;"
+```
+
+### 4. Start Development
 
 ```bash
 # Start the dev server
@@ -73,7 +113,23 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) to see your app.
 
-### 3. Verify Everything Works
+### 5. Seed Demo Content (Optional)
+
+```bash
+# Populate database with sample content
+pnpm seed
+```
+
+This creates:
+- Admin user (admin@example.com / admin123)
+- Sample pages (Home, About)
+- Sample blog posts
+- Sample categories
+- Header and Footer configuration
+
+**Important**: Change the admin password immediately in production!
+
+### 6. Verify Everything Works
 
 ```bash
 # Run all quality checks
@@ -88,27 +144,46 @@ This runs:
 ## Available Commands
 
 ```bash
+# Development
 pnpm dev          # Start development server
 pnpm build        # Build for production
 pnpm start        # Start production server
+
+# Quality checks
 pnpm lint         # Run ESLint
 pnpm lint:fix     # Auto-fix linting issues
 pnpm typecheck    # Run TypeScript compiler
 pnpm test         # Run tests once
 pnpm test:watch   # Run tests in watch mode
 pnpm verify       # Run ALL checks (lint + typecheck + test)
+
+# Payload CMS
+pnpm seed         # Seed database with demo content
+pnpm payload      # Run Payload CLI commands
+pnpm generate:types  # Generate TypeScript types from Payload schema
 ```
 
 ## Project Structure
 
 ```
 vibecode-next-template/
-├── app/                    # Next.js pages (routing only)
-├── components/
-│   ├── ui/                # shadcn/ui components (53 components)
-│   └── layout/            # Layout components (header, footer, nav)
-├── features/              # Feature modules (business logic goes here)
-├── lib/                   # Utilities and shared logic
+├── src/
+│   ├── app/
+│   │   ├── (frontend)/    # Public pages (/, /[slug], /posts, etc.)
+│   │   └── (payload)/     # Admin panel and API routes
+│   ├── access/            # Payload access control functions
+│   ├── blocks/            # Content blocks (Content, MediaBlock, CallToAction)
+│   ├── collections/       # Payload collections (Users, Media, Pages, Posts, Categories)
+│   ├── components/        # Shared React components
+│   │   └── ui/            # shadcn/ui components (53 components)
+│   ├── Footer/            # Footer global config and component
+│   ├── globals/           # Payload globals (SiteSettings)
+│   ├── Header/            # Header global config and component
+│   ├── hooks/             # React and Payload hooks
+│   ├── lib/               # Utilities and shared logic
+│   ├── plugins/           # Payload plugins configuration
+│   ├── seed/              # Database seed scripts
+│   └── utilities/         # Helper functions
 ├── public/                # Static assets
 ├── CLAUDE.md              # AI behavior guidelines (IMPORTANT!)
 └── vercel.json            # Deployment configuration
@@ -137,6 +212,90 @@ Claude will:
 3. Write tests for each step
 4. Verify everything passes
 5. Show you progress and ask for confirmation
+
+## Payload CMS
+
+This template includes Payload CMS 3.x, a powerful headless CMS that provides:
+
+- **Admin Panel** - Full-featured content management UI
+- **REST API** - Automatic REST endpoints for all collections
+- **GraphQL API** - GraphQL endpoint for flexible queries
+- **Authentication** - Built-in user authentication system
+- **Media Management** - Image uploads with automatic optimization
+- **Rich Text Editor** - Lexical-based rich text editing
+
+### Accessing the Admin Panel
+
+After starting the dev server:
+
+1. Open [http://localhost:3000/admin](http://localhost:3000/admin)
+2. Create your first admin user (or use seeded credentials)
+3. Start managing content!
+
+**Seeded admin credentials** (if you ran `pnpm seed`):
+- Email: `admin@example.com`
+- Password: `admin123`
+
+### Content Structure
+
+| Collection | Description |
+|------------|-------------|
+| **Users** | Admin users with roles (admin, editor, user) |
+| **Media** | Images and files with automatic optimization |
+| **Pages** | Static pages with hero and content blocks |
+| **Posts** | Blog posts with featured images and categories |
+| **Categories** | Hierarchical categories for organizing posts |
+
+| Global | Description |
+|--------|-------------|
+| **Header** | Site navigation, logo, and CTA button |
+| **Footer** | Multi-column footer with social links |
+| **Site Settings** | Site name, description, contact info, analytics |
+
+### Content Blocks
+
+Pages can use these content blocks:
+
+- **Content Block** - Rich text with 1-3 column layouts
+- **Media Block** - Images with captions and positioning
+- **Call to Action** - Promotional sections with buttons
+
+### API Endpoints
+
+- **REST API**: `GET /api/pages`, `GET /api/posts`, etc.
+- **GraphQL**: `POST /api/graphql`
+- **Admin**: `/admin`
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `PAYLOAD_SECRET` | Yes | Secret key for encryption (32+ chars) |
+| `NEXT_PUBLIC_SERVER_URL` | No | Application URL (default: http://localhost:3000) |
+| `NEXT_PUBLIC_APP_NAME` | No | Display name for your app |
+
+### Development Workflow
+
+1. **Start the dev server**: `pnpm dev`
+2. **Edit content** in the admin panel at `/admin`
+3. **Create collections** in `src/collections/`
+4. **Create globals** in `src/globals/` or standalone directories
+5. **Create blocks** in `src/blocks/`
+6. **Generate types** after schema changes: `pnpm generate:types`
+
+### Database Management
+
+```bash
+# Seed demo content
+pnpm seed
+
+# Run Payload CLI
+pnpm payload
+
+# Generate TypeScript types
+pnpm generate:types
+```
 
 ## Deployment
 
