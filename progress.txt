@@ -547,3 +547,34 @@ Gotchas for future stories:
 - React hooks (use-mobile.ts) should NOT be in the barrel export with Payload hooks (server vs client)
 - The src/hooks/ directory now contains both React hooks (*.ts with 'use' prefix) and Payload hooks
 - S21-S25 (Frontend pages) will benefit from the revalidation hooks being in place
+
+=== Iteration 21 - S21 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/utilities/getPayload.ts for server-side Payload data fetching
+- Uses Payload's getPayload({ config }) function with @payload-config alias
+- Updated frontend layout (src/app/(frontend)/layout.tsx) to fetch globals:
+  - Header global (slug: 'header')
+  - Footer global (slug: 'footer')
+  - SiteSettings global (slug: 'site-settings')
+- Created typed interfaces for SiteSettings to match Payload global structure
+- Each fetch function has try/catch with meaningful fallback data
+- Uses Promise.all for parallel fetching of Header and Footer (better performance)
+- Added generateMetadata function that uses SiteSettings for dynamic site title/description
+- The layout is now a Server Component (async function) that fetches data
+- Pass fetched data as props to Header and Footer client components
+- Error handling logs to console.error for debugging during development
+- Build succeeds without database - fallback data is used during static generation
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (with expected Postgres connection errors that are handled gracefully)
+
+Gotchas for future stories:
+- Global slugs use kebab-case in Payload (e.g., 'site-settings' not 'siteSettings')
+- Import types from component files (HeaderData, FooterData) for type safety
+- Use depth: 1 for relationship fields (e.g., logo upload) to get populated data
+- The @payload-config alias is already set up in tsconfig.json from S4
+- During build without DB, Payload throws errors but try/catch ensures the build continues
+- S22 (Homepage) will use similar pattern for fetching page data
