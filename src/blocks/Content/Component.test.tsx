@@ -1,11 +1,70 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ContentBlock, type ContentBlockProps } from './Component'
+import type { RichTextContent } from '@/components/RichText'
+
+/**
+ * Mock the @payloadcms/richtext-lexical/react module
+ * The official Payload RichText component has internal converters that
+ * aren't fully available in test environments, so we mock it to render
+ * the content in a simpler way for testing.
+ */
+vi.mock('@payloadcms/richtext-lexical/react', () => ({
+  RichText: ({
+    data,
+    className,
+  }: {
+    data: { root: { children: Array<Record<string, unknown>> } }
+    className?: string
+  }) => {
+    // Simple mock renderer that extracts text from the Lexical structure
+    const renderNode = (node: Record<string, unknown>): React.ReactNode => {
+      if (node.type === 'text' && typeof node.text === 'string') {
+        const format = typeof node.format === 'number' ? node.format : 0
+        let content: React.ReactNode = node.text
+        if (format & 1) content = <strong>{content}</strong>
+        if (format & 2) content = <em>{content}</em>
+        return content
+      }
+      if (node.type === 'paragraph' && Array.isArray(node.children)) {
+        return <p>{node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)}</p>
+      }
+      if (node.type === 'heading' && Array.isArray(node.children)) {
+        const Tag = (node.tag || 'h2') as keyof React.JSX.IntrinsicElements
+        return <Tag>{node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)}</Tag>
+      }
+      if (node.type === 'list' && Array.isArray(node.children)) {
+        const Tag = node.listType === 'number' ? 'ol' : 'ul'
+        return <Tag>{node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)}</Tag>
+      }
+      if (node.type === 'listitem' && Array.isArray(node.children)) {
+        return <li>{node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)}</li>
+      }
+      if (node.type === 'quote' && Array.isArray(node.children)) {
+        return <blockquote>{node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)}</blockquote>
+      }
+      if (Array.isArray(node.children)) {
+        return node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)
+      }
+      return null
+    }
+
+    if (!data?.root?.children) return null
+    return (
+      <div className={className}>
+        {data.root.children.map((node, i) => (
+          <span key={i}>{renderNode(node)}</span>
+        ))}
+      </div>
+    )
+  },
+  defaultJSXConverters: {},
+}))
 
 /**
  * Helper to create mock rich text content
  */
-function createMockRichText(text: string): NonNullable<ContentBlockProps['columnOne']> {
+function createMockRichText(text: string): RichTextContent {
   return {
     root: {
       type: 'root',

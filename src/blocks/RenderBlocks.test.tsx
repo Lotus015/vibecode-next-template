@@ -1,6 +1,46 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { RenderBlocks, type Block } from './RenderBlocks'
+
+/**
+ * Mock the @payloadcms/richtext-lexical/react module
+ * The official Payload RichText component has internal converters that
+ * aren't fully available in test environments, so we mock it to render
+ * the content in a simpler way for testing.
+ */
+vi.mock('@payloadcms/richtext-lexical/react', () => ({
+  RichText: ({
+    data,
+    className,
+  }: {
+    data: { root: { children: Array<Record<string, unknown>> } }
+    className?: string
+  }) => {
+    // Simple mock renderer that extracts text from the Lexical structure
+    const renderNode = (node: Record<string, unknown>): React.ReactNode => {
+      if (node.type === 'text' && typeof node.text === 'string') {
+        return node.text
+      }
+      if (node.type === 'paragraph' && Array.isArray(node.children)) {
+        return <p>{node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)}</p>
+      }
+      if (Array.isArray(node.children)) {
+        return node.children.map((c, i) => <span key={i}>{renderNode(c as Record<string, unknown>)}</span>)
+      }
+      return null
+    }
+
+    if (!data?.root?.children) return null
+    return (
+      <div className={className}>
+        {data.root.children.map((node, i) => (
+          <span key={i}>{renderNode(node)}</span>
+        ))}
+      </div>
+    )
+  },
+  defaultJSXConverters: {},
+}))
 
 describe('RenderBlocks', () => {
   it('should return null when blocks is undefined', () => {
@@ -96,9 +136,7 @@ describe('RenderBlocks', () => {
               {
                 type: 'paragraph',
                 version: 1,
-                children: [
-                  { type: 'text', text: 'First Block', version: 1 },
-                ],
+                children: [{ type: 'text', text: 'First Block', version: 1 }],
               },
             ],
             direction: 'ltr',
@@ -132,9 +170,7 @@ describe('RenderBlocks', () => {
               {
                 type: 'paragraph',
                 version: 1,
-                children: [
-                  { type: 'text', text: 'First', version: 1 },
-                ],
+                children: [{ type: 'text', text: 'First', version: 1 }],
               },
             ],
             direction: 'ltr',
@@ -155,9 +191,7 @@ describe('RenderBlocks', () => {
               {
                 type: 'paragraph',
                 version: 1,
-                children: [
-                  { type: 'text', text: 'Second', version: 1 },
-                ],
+                children: [{ type: 'text', text: 'Second', version: 1 }],
               },
             ],
             direction: 'ltr',
@@ -178,9 +212,7 @@ describe('RenderBlocks', () => {
               {
                 type: 'paragraph',
                 version: 1,
-                children: [
-                  { type: 'text', text: 'Third', version: 1 },
-                ],
+                children: [{ type: 'text', text: 'Third', version: 1 }],
               },
             ],
             direction: 'ltr',
@@ -217,9 +249,7 @@ describe('RenderBlocks', () => {
               {
                 type: 'paragraph',
                 version: 1,
-                children: [
-                  { type: 'text', text: 'Block with ID', version: 1 },
-                ],
+                children: [{ type: 'text', text: 'Block with ID', version: 1 }],
               },
             ],
             direction: 'ltr',

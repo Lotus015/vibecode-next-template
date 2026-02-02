@@ -1,36 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-
-/**
- * Serialized Lexical Node type
- * Represents the structure of rich text content from Payload's Lexical editor
- */
-interface SerializedLexicalNode {
-  type: string
-  version: number
-  children?: SerializedLexicalNode[]
-  text?: string
-  format?: number
-  tag?: string
-  listType?: string
-  direction?: 'ltr' | 'rtl' | null
-  indent?: number
-}
-
-/**
- * Rich Text content structure from Payload
- */
-interface RichTextContent {
-  root?: {
-    type: string
-    children?: SerializedLexicalNode[]
-    direction?: 'ltr' | 'rtl' | null
-    format?: string
-    indent?: number
-    version?: number
-  }
-}
+import { RichText, type RichTextContent } from '@/components/RichText'
 
 /**
  * Button type for CTA buttons
@@ -56,119 +27,6 @@ export interface CallToActionBlockProps {
 }
 
 /**
- * Format flags for text styling
- */
-const IS_BOLD = 1
-const IS_ITALIC = 2
-const IS_STRIKETHROUGH = 4
-const IS_UNDERLINE = 8
-const IS_CODE = 16
-
-/**
- * Render text with formatting
- */
-function renderFormattedText(text: string, format?: number): React.ReactNode {
-  if (!format) return text
-
-  let result: React.ReactNode = text
-
-  if (format & IS_BOLD) {
-    result = <strong>{result}</strong>
-  }
-  if (format & IS_ITALIC) {
-    result = <em>{result}</em>
-  }
-  if (format & IS_STRIKETHROUGH) {
-    result = <s>{result}</s>
-  }
-  if (format & IS_UNDERLINE) {
-    result = <u>{result}</u>
-  }
-  if (format & IS_CODE) {
-    result = <code className="rounded bg-background/50 px-1 py-0.5 font-mono text-sm">{result}</code>
-  }
-
-  return result
-}
-
-/**
- * Render a single Lexical node recursively
- */
-function renderNode(node: SerializedLexicalNode, index: number): React.ReactNode {
-  const key = `${node.type}-${index}`
-
-  // Text node
-  if (node.type === 'text' && node.text !== undefined) {
-    return <React.Fragment key={key}>{renderFormattedText(node.text, node.format)}</React.Fragment>
-  }
-
-  // Paragraph
-  if (node.type === 'paragraph') {
-    return (
-      <p key={key} className="mb-4 last:mb-0">
-        {node.children?.map((child, i) => renderNode(child, i))}
-      </p>
-    )
-  }
-
-  // Headings
-  if (node.type === 'heading') {
-    const HeadingTag = (node.tag || 'h2') as keyof Pick<
-      React.JSX.IntrinsicElements,
-      'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-    >
-    return (
-      <HeadingTag key={key} className="mb-3 font-semibold">
-        {node.children?.map((child, i) => renderNode(child, i))}
-      </HeadingTag>
-    )
-  }
-
-  // Lists
-  if (node.type === 'list') {
-    const ListTag = node.listType === 'number' ? 'ol' : 'ul'
-    const listClass = node.listType === 'number' ? 'mb-4 list-decimal pl-6' : 'mb-4 list-disc pl-6'
-    return (
-      <ListTag key={key} className={listClass}>
-        {node.children?.map((child, i) => renderNode(child, i))}
-      </ListTag>
-    )
-  }
-
-  // List item
-  if (node.type === 'listitem') {
-    return <li key={key}>{node.children?.map((child, i) => renderNode(child, i))}</li>
-  }
-
-  // Linebreak
-  if (node.type === 'linebreak') {
-    return <br key={key} />
-  }
-
-  // Default: render children if they exist
-  if (node.children && node.children.length > 0) {
-    return (
-      <React.Fragment key={key}>
-        {node.children.map((child, i) => renderNode(child, i))}
-      </React.Fragment>
-    )
-  }
-
-  return null
-}
-
-/**
- * Render rich text content from Lexical
- */
-function RichText({ content }: { content?: RichTextContent | null }): React.JSX.Element | null {
-  if (!content?.root?.children) {
-    return null
-  }
-
-  return <div className="prose">{content.root.children.map((node, i) => renderNode(node, i))}</div>
-}
-
-/**
  * Background style classes mapping
  */
 const backgroundClasses: Record<string, string> = {
@@ -183,6 +41,9 @@ const backgroundClasses: Record<string, string> = {
  * CallToAction Block Component
  *
  * Renders a promotional call-to-action section with centered layout.
+ * Uses the official Payload RichText component for proper rendering of
+ * all Lexical node types.
+ *
  * Includes heading, subheading, optional rich text, and action buttons.
  *
  * Layout:
