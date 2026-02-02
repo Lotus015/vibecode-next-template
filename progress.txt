@@ -610,3 +610,40 @@ Gotchas for future stories:
 - FallbackContent provides helpful instructions for new users
 - The same patterns (getHomepage, try/catch, fallbacks) apply to S23 (dynamic pages)
 - Hero component can be reused for any page with hero sections
+
+=== Iteration 23 - S23 - 2026-02-02 20:42:56 ===
+Status: COMPLETE
+Learnings:
+- Created src/app/(frontend)/[slug]/page.tsx for dynamic page routing
+- Followed the exact patterns established in homepage (page.tsx):
+  - PageData interface for type safety
+  - getPageBySlug function with try/catch for fetching
+  - generateMetadata for SEO using generateMeta utility
+  - Hero and RenderBlocks components for rendering
+- Implemented generateStaticParams for static generation:
+  - Fetches all page slugs from Payload at build time
+  - Filters out 'home' slug (handled by homepage route)
+  - Returns array of { slug: string } for Next.js
+  - Uses depth: 0 and select for minimal data fetching
+- Used notFound() from 'next/navigation' for missing pages
+- Next.js 16 params are now Promise-based (async params)
+  - Must await params before accessing properties: const { slug } = await params
+  - Both generateMetadata and Page component use this pattern
+- All acceptance criteria met:
+  - ✓ src/app/(frontend)/[slug]/page.tsx for dynamic pages
+  - ✓ Fetches page by slug from Pages collection
+  - ✓ Renders hero and blocks
+  - ✓ notFound() for missing pages
+  - ✓ generateStaticParams for static generation
+  - ✓ generateMetadata for SEO
+
+Test Results:
+- pnpm build: SUCCESS (Postgres errors handled gracefully by try/catch)
+- Route table shows: ● /[slug] (SSG - prerendered as static HTML)
+
+Gotchas for future stories:
+- Next.js 16 uses async params in dynamic routes (must await params)
+- generateStaticParams returns empty array on DB error - pages will be generated on-demand
+- The 'home' slug is excluded from generateStaticParams (handled by / route)
+- S24 (Blog Listing) and S25 (Blog Post Detail) will follow similar patterns
+- Use depth: 0 and select for minimal data when only fetching slugs
