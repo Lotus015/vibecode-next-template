@@ -578,3 +578,35 @@ Gotchas for future stories:
 - The @payload-config alias is already set up in tsconfig.json from S4
 - During build without DB, Payload throws errors but try/catch ensures the build continues
 - S22 (Homepage) will use similar pattern for fetching page data
+
+=== Iteration 22 - S22 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/components/Hero.tsx component for rendering hero sections
+  - Supports three hero types: highImpact (full-width bg), mediumImpact (split), lowImpact (simple text)
+  - Handles both populated (object with url) and unpopulated (string ID) media states
+  - Uses next/image with priority loading for hero images
+- Updated src/app/(frontend)/page.tsx to fetch homepage from Payload CMS
+  - Homepage is identified by slug: 'home' in Pages collection
+  - Uses payload.find() with where clause for slug matching
+  - depth: 2 ensures nested relationships (hero.media) are populated
+- Integrated RenderBlocks component for dynamic content blocks
+- Added try/catch with user-friendly FallbackContent component
+- Added generateMetadata function using the existing generateMeta utility
+- All acceptance criteria met:
+  - ✓ src/app/(frontend)/page.tsx fetches homepage from Pages
+  - ✓ Renders hero section from page data
+  - ✓ Renders content blocks using RenderBlocks
+  - ✓ try/catch with fallback content when no data
+  - ✓ generateMetadata function for SEO
+  - ✓ Server Component for data fetching
+
+Test Results:
+- pnpm build: SUCCESS (Postgres errors handled gracefully with fallback content)
+
+Gotchas for future stories:
+- Homepage uses slug: 'home' - users must create a page with this slug to customize
+- Use depth: 2 for pages to ensure nested media relationships are fully populated
+- FallbackContent provides helpful instructions for new users
+- The same patterns (getHomepage, try/catch, fallbacks) apply to S23 (dynamic pages)
+- Hero component can be reused for any page with hero sections
