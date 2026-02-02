@@ -647,3 +647,75 @@ Gotchas for future stories:
 - The 'home' slug is excluded from generateStaticParams (handled by / route)
 - S24 (Blog Listing) and S25 (Blog Post Detail) will follow similar patterns
 - Use depth: 0 and select for minimal data when only fetching slugs
+
+=== Iteration 24 - S24 - 2026-02-02 20:46:30 ===
+Status: COMPLETE
+Learnings:
+- Created blog listing page at src/app/(frontend)/posts/page.tsx
+- Created reusable components:
+  - PostCard: Displays post preview with featured image, title, excerpt, date
+  - Pagination: URL-based pagination with Previous/Next buttons
+- Next.js 16 uses Promise-based searchParams (must await searchParams)
+- Used Payload's paginated find() with page, limit, and sort options
+- Filter by _status: 'published' to only show published posts
+- Sort by '-publishedAt' for newest first (minus prefix = descending)
+- depth: 1 populates the featuredImage relationship
+- Created PostCardData interface to handle both populated and unpopulated media
+- Responsive grid layout using Tailwind: grid-cols-1, sm:grid-cols-2, lg:grid-cols-3
+- EmptyState component provides user-friendly feedback when no posts exist
+- Pagination uses URL query params (?page=2) for navigation
+- Page is rendered dynamically (ƒ) due to pagination - this is correct behavior
+
+Test Results:
+- pnpm build: SUCCESS (Postgres errors handled gracefully by try/catch)
+- Route table shows: ƒ /posts (Dynamic - server-rendered on demand)
+
+Gotchas for future stories:
+- Next.js 16 searchParams are now Promise-based like params
+- Use POSTS_PER_PAGE constant for easy configuration
+- Pagination basePath should match the route (e.g., '/posts')
+- S25 (Blog Post Detail) will create the /posts/[slug] route
+- PostCard component can be reused in related posts, search results, etc.
+
+=== Iteration 25 - S25 - 2026-02-02 20:48:30 ===
+Status: COMPLETE
+Learnings:
+- Created blog post detail page at src/app/(frontend)/posts/[slug]/page.tsx
+- Created reusable RichText component at src/components/RichText.tsx for rendering Lexical content
+- Followed patterns from dynamic page route ([slug]/page.tsx) and blog listing (posts/page.tsx)
+- Key components:
+  - PostData interface with all post fields (title, slug, content, featuredImage, author, categories, meta)
+  - getPostBySlug function fetches post by slug with depth: 2 to populate relationships
+  - getRelatedPosts function fetches posts sharing categories (limited to 3)
+  - generateStaticParams for static generation of published posts
+  - generateMetadata using generateMeta utility with collectionSlug: 'posts'
+- RichText component handles Lexical JSON format with:
+  - Text formatting (bold, italic, strikethrough, underline, code)
+  - Paragraphs, headings (h1-h6), lists (ordered/unordered), blockquotes
+  - Links with newTab support
+  - Tailwind prose styling for typography
+- Handled both populated and unpopulated relationship states:
+  - featuredImage: MediaData | string | null
+  - author: AuthorData | string | null
+  - categories: (CategoryData | string)[]
+- Related posts section uses categories.in query with post exclusion (id.not_equals)
+- Featured image uses full-width aspect-[21/9] hero style
+- All acceptance criteria met:
+  - ✓ src/app/(frontend)/posts/[slug]/page.tsx for post detail
+  - ✓ Fetches post by slug from Posts collection
+  - ✓ Renders title, featured image, content (richText)
+  - ✓ Shows author and date
+  - ✓ Related posts section (optional, based on categories)
+  - ✓ generateMetadata for SEO
+  - ✓ notFound() for missing posts
+
+Test Results:
+- pnpm build: SUCCESS (Postgres errors handled gracefully by try/catch)
+- Route table shows: ● /posts/[slug] (SSG - prerendered as static HTML)
+
+Gotchas for future stories:
+- Related posts query uses 'in' operator for categories array filtering
+- depth: 2 required to populate nested relationships (author, categories, featuredImage)
+- RichText component can be reused wherever rich text content needs rendering
+- PostCard component works well for related posts display
+- S31 could enhance RichText with official @payloadcms/richtext-lexical/react renderer
