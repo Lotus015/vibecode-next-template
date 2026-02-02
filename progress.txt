@@ -760,3 +760,49 @@ Gotchas for future stories:
 - Plugins are registered via the 'plugins' array in buildConfig
 - Nested Docs plugin expects parentFieldSlug and breadcrumbsFieldSlug to match existing field names
 - The Redirects collection is auto-created by the plugin - no need to define manually
+
+=== Iteration 27 - S27 - 2026-02-02 20:58:00 ===
+Status: COMPLETE
+Learnings:
+- Created .env.example with DATABASE_URL, PAYLOAD_SECRET, NEXT_PUBLIC_SERVER_URL, NEXT_PUBLIC_APP_NAME
+- Updated src/lib/env.ts with Zod validation schema for all environment variables
+  - Server-side: DATABASE_URL, PAYLOAD_SECRET, VERCEL_PROJECT_PRODUCTION_URL (all optional for builds)
+  - Client-side: NEXT_PUBLIC_APP_NAME (with default), NEXT_PUBLIC_SERVER_URL
+- Added TypeScript declarations in src/env.d.ts extending NodeJS.ProcessEnv interface
+- Updated vercel.json with:
+  - $schema for IDE support
+  - CORS headers for /api/* routes (needed for Payload CMS REST API)
+  - Default NEXT_PUBLIC_APP_NAME env var
+- Updated .gitignore to properly track .env.example while excluding actual .env files
+  - Changed from `.env*` to specific files (.env, .env.local, etc.)
+  - Added `!.env.example` to force tracking
+- CRITICAL FIX: vitest.config.ts had incorrect path alias
+  - Was: "@": path.resolve(__dirname, "./") (root directory)
+  - Fixed: "@": path.resolve(__dirname, "./src") (matches tsconfig.json)
+  - Also added @payload-config alias for consistency
+- Updated page.test.tsx to work with new async Server Component
+  - Old tests referenced static Jigjoy template content that no longer exists
+  - New tests mock Payload utilities and test fallback content behavior
+  - Used vi.mock() for @/utilities, @/components/Hero, @/blocks/RenderBlocks
+  - Async Server Components need `await Component()` before render()
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (15 tests in 3 files)
+- pnpm build: SUCCESS (Postgres errors handled gracefully)
+
+Acceptance Criteria Met:
+- ✓ .env.example with DATABASE_URL, PAYLOAD_SECRET, NEXT_PUBLIC_SERVER_URL
+- ✓ src/lib/env.ts for environment validation (using Zod)
+- ✓ TypeScript declarations for environment variables (src/env.d.ts)
+- ✓ vercel.json updated for deployment
+- ✓ .gitignore includes .env (and excludes .env.example)
+
+Gotchas for future stories:
+- Vitest path aliases must match tsconfig.json paths exactly
+- When testing async Server Components, await the component function first
+- Environment variables should be optional during builds for CI/CD compatibility
+- Zod's .url() validator rejects empty strings - use .optional() for optional URLs
+- VERCEL_PROJECT_PRODUCTION_URL doesn't include protocol - add https:// when using
+- S29 (Update Tests) should add more comprehensive tests for Payload components
