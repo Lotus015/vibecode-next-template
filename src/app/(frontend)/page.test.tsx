@@ -1,54 +1,60 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
 import HomePage from './page'
 
+// Mock the utilities module to avoid Payload CMS initialization
+vi.mock('@/utilities', () => ({
+  getPayload: vi.fn().mockResolvedValue({
+    find: vi.fn().mockResolvedValue({ docs: [] }),
+  }),
+}))
+
+// Mock the Hero component since it's a separate concern
+vi.mock('@/components/Hero', () => ({
+  Hero: ({ hero }: { hero?: unknown }) => (
+    <div data-testid="hero">{hero ? 'Hero Content' : 'No Hero'}</div>
+  ),
+}))
+
+// Mock the RenderBlocks component since it's a separate concern
+vi.mock('@/blocks/RenderBlocks', () => ({
+  RenderBlocks: ({ blocks }: { blocks?: unknown[] | null }) => (
+    <div data-testid="blocks">{blocks?.length || 0} blocks</div>
+  ),
+}))
+
 describe('HomePage', () => {
-  it('should render the Jigjoy logo', () => {
-    render(<HomePage />)
-    const logo = screen.getByAltText(/jigjoy logo/i)
-    expect(logo).toBeDefined()
-    expect(logo.getAttribute('src')).toBe('/jigjoy.svg')
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('should render the subtitle', () => {
-    render(<HomePage />)
-    const subtitle = screen.getByText(/AI-safe Next.js template/i)
-    expect(subtitle).toBeDefined()
+  it('should render fallback content when no homepage data exists', async () => {
+    // HomePage is an async Server Component, so we need to await it
+    const Component = await HomePage()
+    render(Component)
+
+    await waitFor(() => {
+      const heading = screen.getByRole('heading', { level: 1 })
+      expect(heading).toBeDefined()
+      expect(heading.textContent).toBe('Welcome')
+    })
   })
 
-  it('should render the community CTA', () => {
-    render(<HomePage />)
-    const cta = screen.getByText(/join our community/i)
-    expect(cta).toBeDefined()
+  it('should render main element', async () => {
+    const Component = await HomePage()
+    render(Component)
+
+    const main = screen.getByRole('main')
+    expect(main).toBeDefined()
   })
 
-  it('should render Discord link with correct href', () => {
-    render(<HomePage />)
-    const discordLink = screen.getByLabelText(/join our discord/i)
-    expect(discordLink).toBeDefined()
-    expect(discordLink.getAttribute('href')).toBe('https://discord.gg/xQR6DNtY')
-  })
+  it('should show instructions to create homepage', async () => {
+    const Component = await HomePage()
+    render(Component)
 
-  it('should render GitHub link with correct href', () => {
-    render(<HomePage />)
-    const githubLink = screen.getByLabelText(/visit our github/i)
-    expect(githubLink).toBeDefined()
-    expect(githubLink.getAttribute('href')).toBe('https://github.com/jigjoy-io')
-  })
-
-  it('should render website link with correct href', () => {
-    render(<HomePage />)
-    const websiteLink = screen.getByLabelText(/visit our website/i)
-    expect(websiteLink).toBeDefined()
-    expect(websiteLink.getAttribute('href')).toBe('https://jigjoy.io')
-  })
-
-  it('should have target="_blank" on all external links', () => {
-    render(<HomePage />)
-    const links = screen.getAllByRole('link')
-    links.forEach((link) => {
-      expect(link.getAttribute('target')).toBe('_blank')
-      expect(link.getAttribute('rel')).toBe('noopener noreferrer')
+    await waitFor(() => {
+      const instruction = screen.getByText(/Create a page with the slug/i)
+      expect(instruction).toBeDefined()
     })
   })
 })
