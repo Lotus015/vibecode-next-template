@@ -1,6 +1,7 @@
 import type { CollectionConfig, CollectionAfterChangeHook, FieldHook } from 'payload'
 import { Content } from '@/blocks/Content/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
+import { CallToAction } from '@/blocks/CallToAction/config'
 
 /**
  * Format slug from title
@@ -199,7 +200,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       label: 'Layout',
-      blocks: [Content, MediaBlock],
+      blocks: [Content, MediaBlock, CallToAction],
       admin: {
         description: 'Add content blocks to build the page layout',
       },
