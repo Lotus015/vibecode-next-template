@@ -898,3 +898,51 @@ Gotchas for future stories:
 - OpenGraph type checking requires helper functions due to Next.js union types
 - vitest.config.ts path aliases must match tsconfig.json exactly
 - S30 (Update Documentation) is next
+
+=== Iteration 30 - S30 - 2026-02-02T21:20:00Z ===
+Status: COMPLETE
+Learnings:
+- Updated README.md with comprehensive Payload CMS documentation section
+- Added database prerequisites (PostgreSQL local, cloud, or Docker options)
+- Documented all environment variables with examples
+- Added step-by-step database setup and seed instructions
+- Updated project structure to reflect src/ directory layout with Payload directories
+- Documented all content collections (Users, Media, Pages, Posts, Categories) and globals (Header, Footer, SiteSettings)
+- Added content blocks documentation (Content, MediaBlock, CallToAction)
+- Included API endpoints documentation (REST, GraphQL, Admin)
+- Added development workflow instructions
+- Updated CLAUDE.md to version 2.1 (Next.js 16 + React 19 + Payload CMS 3.x)
+- Added new section 5: PAYLOAD CMS PATTERNS covering:
+  - Collection creation patterns with example code
+  - Block creation patterns (config.ts, Component.tsx, index.ts)
+  - Global configuration patterns
+  - Access control function usage
+  - Data fetching with getPayload() utility
+  - Rich text rendering with RichText component
+  - Build behavior without database (try/catch with fallbacks)
+  - Type regeneration with pnpm generate:types
+- Renumbered all subsequent sections (6-16)
+- Documentation files are markdown only - no tests required per acceptance criteria
+
+Test Results:
+- test -f README.md && test -f CLAUDE.md: PASS (both files exist)
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (117 tests in 10 files)
+- pnpm build: SUCCESS (Postgres errors handled gracefully with fallback content)
+
+Acceptance Criteria Met:
+- ✓ README.md updated with Payload CMS section
+- ✓ Database setup instructions (PostgreSQL prerequisites, createdb, Docker)
+- ✓ Environment variables documentation (DATABASE_URL, PAYLOAD_SECRET, etc.)
+- ✓ Admin panel access instructions (/admin, seeded credentials)
+- ✓ Seed script usage (pnpm seed with details on what gets created)
+- ✓ Development workflow (start dev, edit content, create collections, generate types)
+- ✓ CLAUDE.md updated with CMS patterns (new section 5 with comprehensive patterns)
+
+Gotchas for future stories:
+- Documentation updates don't require writing tests - markdown files are sufficient
+- CLAUDE.md section numbering must be updated when adding new sections
+- The project builds without a database - all data fetching has try/catch with fallbacks
+- Seed script creates admin user with default credentials (must change in production)
+- S31 (Use Official Payload Rich Text Renderer) is next if needed
