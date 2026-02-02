@@ -855,3 +855,46 @@ Gotchas for future stories:
 - To run seed: start PostgreSQL, set DATABASE_URL, then run pnpm seed
 - Admin credentials: admin@example.com / admin123 (change in production!)
 - S29 (Update Tests) is next
+
+=== Iteration 29 - S29 - 2026-02-02T20:11:15Z ===
+Status: COMPLETE
+Learnings:
+- Created comprehensive test suites for Payload integration components
+- Test files created:
+  - src/utilities/formatDateTime.test.ts (21 tests) - date formatting and relative time
+  - src/utilities/getURL.test.ts (7 tests) - server/client URL resolution
+  - src/utilities/mergeOpenGraph.test.ts (10 tests) - OpenGraph metadata merging
+  - src/blocks/Content/Component.test.tsx (16 tests) - rich text block rendering
+  - src/blocks/MediaBlock/Component.test.tsx (15 tests) - image block with positioning
+  - src/blocks/CallToAction/Component.test.tsx (19 tests) - CTA with buttons and backgrounds
+  - src/blocks/RenderBlocks.test.tsx (14 tests) - dynamic block rendering
+- Total tests: 117 (increased from 15 to 117)
+- Key testing patterns:
+  - Mock Lexical rich text content with proper structure (root.children with type, version, text)
+  - Use vi.useFakeTimers() for time-dependent tests (formatRelativeTime)
+  - Handle Next.js Metadata type complexity with helper functions for type property access
+  - Test both populated (object) and unpopulated (string ID) media states
+  - NODE_ENV is 'test' in vitest, so development-only console.warn won't fire
+- TypeScript gotcha: Metadata['openGraph'] from Next.js is a union type, 'type' property doesn't exist on all variants
+  - Solution: Use helper function with type assertion to safely access 'type'
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (117 tests in 10 files)
+- pnpm build: SUCCESS (Postgres errors handled gracefully with fallback content)
+
+Acceptance Criteria Met:
+- ✓ Existing tests still pass with new structure (original 15 tests still pass)
+- ✓ Tests for utility functions (formatDateTime, getURL, mergeOpenGraph)
+- ✓ Tests for block components (Content, MediaBlock, CallToAction)
+- ✓ Tests for RenderBlocks component
+- ✓ Mock Payload data in tests where needed
+- ✓ All tests pass: pnpm test (117 tests)
+
+Gotchas for future stories:
+- When testing async Server Components, await the component first: `await Component()`
+- Lexical rich text mock structure must include type, version, children at each level
+- OpenGraph type checking requires helper functions due to Next.js union types
+- vitest.config.ts path aliases must match tsconfig.json exactly
+- S30 (Update Documentation) is next
