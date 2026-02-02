@@ -407,3 +407,54 @@ Gotchas for future stories:
 - Background color classes need to include text color for primary/secondary/accent backgrounds
 - minRows/maxRows on array fields limits number of items (e.g., maxRows: 3 for buttons)
 - S16 (RenderBlocks) will need to map 'callToAction' slug to CallToActionComponent
+
+=== Iteration 16 - S16 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/blocks/RenderBlocks.tsx component for dynamic block rendering
+- Created src/blocks/index.ts exporting all block configs and components
+- Used discriminated union pattern (blockType) for type-safe block rendering
+- Switch statement approach is cleaner than Record<string, ComponentType> for TypeScript
+- Direct Record<string, ComponentType<Union>> doesn't work well with React components of different prop types
+- Each block component is exported with different naming from its index.ts (e.g., ContentBlock -> ContentComponent)
+- Must check existing exports before re-exporting - Content exports ContentComponent, not ContentBlock
+- blockConfigs array provides easy registration in Payload collections
+- Unknown block types handled gracefully with dev-only console.warn
+- Block key uses block.id (from Payload) or index fallback for stable React keys
+
+Test Results:
+- pnpm build: SUCCESS (compiled in 5.7s)
+
+Gotchas for future stories:
+- When mapping block types to components, use switch statement for proper TypeScript inference
+- Check the exact export names from each block's index.ts file before importing
+- The blockType field is a string literal that matches the block's slug in config
+- S22/S23 (Homepage/Dynamic Pages) will use RenderBlocks to render page.layout blocks
+- S29 (Tests) should add tests for RenderBlocks component with mock block data
+
+=== Iteration 17 - S17 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- S17 was essentially completed incrementally during stories S5-S12
+- Collections were added to payload.config.ts as they were created (Users, Media, Pages, Posts, Categories)
+- Globals were added to payload.config.ts as they were created (Header, Footer, SiteSettings)
+- payload.config.ts imports use correct paths:
+  - './collections/Users' (directory with index.ts)
+  - './collections/Media' (single file .ts)
+  - './collections/Pages' (directory with index.ts)
+  - './collections/Posts' (directory with index.ts)
+  - './collections/Categories' (single file .ts)
+  - './Header/config' (global with separate Component.tsx)
+  - './Footer/config' (global with separate Component.tsx)
+  - './globals/SiteSettings' (standalone global file)
+- Payload's buildConfig function provides proper TypeScript inference for collections and globals arrays
+- No explicit type annotations needed - TypeScript infers CollectionConfig[] and GlobalConfig[] from buildConfig
+
+Test Results:
+- pnpm build: SUCCESS (compiled in 6.0s)
+
+Gotchas for future stories:
+- Collections/globals can be organized as single files or directories with index.ts
+- When a collection/global has associated components (Header, Footer), use directory structure
+- Payload's type inference handles array typing automatically through buildConfig
+- The db adapter (postgresAdapter) gracefully handles missing DATABASE_URL during builds
