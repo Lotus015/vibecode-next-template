@@ -5,6 +5,7 @@ import { Hero, type HeroData } from '@/components/Hero'
 import { RenderBlocks, type Block } from '@/blocks/RenderBlocks'
 import { getPayload } from '@/utilities'
 import { generateMeta } from '@/utilities/generateMeta'
+import { demoHeroData, demoHomeBlocks } from '@/data/demo-content'
 
 /**
  * Page data structure matching the Pages collection
@@ -75,16 +76,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Fallback content component shown when no homepage data exists
+ * Demo content component shown when no homepage data exists in CMS
+ * Displays demo hero and blocks so the template is immediately usable
  */
-function FallbackContent(): React.JSX.Element {
+function DemoContent(): React.JSX.Element {
   return (
-    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-      <h1 className="mb-4 text-4xl font-bold tracking-tight">Welcome</h1>
-      <p className="max-w-md text-lg text-muted-foreground">
-        Create a page with the slug &quot;home&quot; in the admin panel to customize this homepage.
-      </p>
-    </div>
+    <>
+      {/* Demo Hero Section */}
+      <Hero hero={demoHeroData} />
+
+      {/* Demo Content Blocks */}
+      <RenderBlocks blocks={demoHomeBlocks} />
+    </>
   )
 }
 
@@ -104,11 +107,11 @@ function FallbackContent(): React.JSX.Element {
 export default async function HomePage(): Promise<React.JSX.Element> {
   const page = await getHomepage()
 
-  // Show fallback content if no homepage found
+  // Show demo content if no homepage found in CMS
   if (!page) {
     return (
       <main>
-        <FallbackContent />
+        <DemoContent />
       </main>
     )
   }

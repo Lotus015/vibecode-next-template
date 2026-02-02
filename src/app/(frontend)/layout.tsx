@@ -8,6 +8,7 @@ import { Header } from '@/Header/Component'
 import type { FooterData } from '@/Footer/Component'
 import type { HeaderData } from '@/Header/Component'
 import { getPayload } from '@/utilities'
+import { demoHeaderData, demoFooterData, demoSiteSettings } from '@/data/demo-content'
 
 import './globals.css'
 
@@ -41,26 +42,13 @@ interface SiteSettings {
 
 /**
  * Default fallback values when data fetching fails
+ * Uses demo content to show full preview without database
  */
-const defaultSiteSettings: SiteSettings = {
-  general: {
-    siteName: 'Vibecode Next Template',
-    siteDescription: 'AI-safe Next.js template with Payload CMS',
-  },
-}
+const defaultSiteSettings: SiteSettings = demoSiteSettings
 
-const defaultHeaderData: HeaderData = {
-  navItems: [],
-  ctaButton: null,
-  logo: null,
-}
+const defaultHeaderData: HeaderData = demoHeaderData
 
-const defaultFooterData: FooterData = {
-  columns: [],
-  socialLinks: [],
-  copyright: null,
-  logo: null,
-}
+const defaultFooterData: FooterData = demoFooterData
 
 /**
  * Fetches Header global from Payload CMS with error handling

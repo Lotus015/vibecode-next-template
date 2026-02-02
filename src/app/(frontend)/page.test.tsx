@@ -28,15 +28,21 @@ describe('HomePage', () => {
     vi.clearAllMocks()
   })
 
-  it('should render fallback content when no homepage data exists', async () => {
+  it('should render demo content when no homepage data exists in CMS', async () => {
     // HomePage is an async Server Component, so we need to await it
     const Component = await HomePage()
     render(Component)
 
     await waitFor(() => {
-      const heading = screen.getByRole('heading', { level: 1 })
-      expect(heading).toBeDefined()
-      expect(heading.textContent).toBe('Welcome')
+      // Should render demo hero
+      const hero = screen.getByTestId('hero')
+      expect(hero).toBeDefined()
+      expect(hero.textContent).toBe('Hero Content')
+
+      // Should render demo blocks (2 blocks from demoHomeBlocks)
+      const blocks = screen.getByTestId('blocks')
+      expect(blocks).toBeDefined()
+      expect(blocks.textContent).toContain('2')
     })
   })
 
@@ -48,13 +54,13 @@ describe('HomePage', () => {
     expect(main).toBeDefined()
   })
 
-  it('should show instructions to create homepage', async () => {
+  it('should render hero and blocks components', async () => {
     const Component = await HomePage()
     render(Component)
 
     await waitFor(() => {
-      const instruction = screen.getByText(/Create a page with the slug/i)
-      expect(instruction).toBeDefined()
+      expect(screen.getByTestId('hero')).toBeDefined()
+      expect(screen.getByTestId('blocks')).toBeDefined()
     })
   })
 })

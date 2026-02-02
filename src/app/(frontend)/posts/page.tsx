@@ -4,6 +4,7 @@ import * as React from 'react'
 import { PostCard, type PostCardData } from '@/components/PostCard'
 import { Pagination } from '@/components/Pagination'
 import { getPayload } from '@/utilities'
+import { demoPosts } from '@/data/demo-content'
 
 /** Number of posts to display per page */
 const POSTS_PER_PAGE = 9
@@ -57,11 +58,12 @@ async function getPosts(page: number = 1): Promise<PostsResponse> {
     }
   } catch (error) {
     console.error('Failed to fetch posts:', error)
+    // Return demo posts when CMS is unavailable
     return {
-      posts: [],
-      totalPages: 0,
+      posts: demoPosts,
+      totalPages: 1,
       currentPage: 1,
-      totalDocs: 0,
+      totalDocs: demoPosts.length,
     }
   }
 }
