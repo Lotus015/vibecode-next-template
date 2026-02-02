@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { admins, adminsOrSelf, adminsAdminAccess } from '@/access'
 
 /**
  * Users Collection
@@ -25,40 +26,16 @@ export const Users: CollectionConfig = {
     },
   },
   access: {
-    // Only admins can read the users list
-    read: ({ req: { user } }) => {
-      if (!user) return false
-      // Admins can read all users
-      if (user.role === 'admin') return true
-      // Others can only read their own user
-      return {
-        id: {
-          equals: user.id,
-        },
-      }
-    },
+    // Admins can read all users, others can only read their own user
+    read: adminsOrSelf,
     // Only admins can create users (except via registration if enabled)
-    create: ({ req: { user } }) => {
-      return user?.role === 'admin'
-    },
+    create: admins,
     // Admins can update any user, others can only update themselves
-    update: ({ req: { user } }) => {
-      if (!user) return false
-      if (user.role === 'admin') return true
-      return {
-        id: {
-          equals: user.id,
-        },
-      }
-    },
+    update: adminsOrSelf,
     // Only admins can delete users
-    delete: ({ req: { user } }) => {
-      return user?.role === 'admin'
-    },
+    delete: admins,
     // Admin panel access restricted to admin role
-    admin: ({ req: { user } }) => {
-      return user?.role === 'admin'
-    },
+    admin: adminsAdminAccess,
   },
   fields: [
     // Email is automatically included by auth: true
@@ -81,9 +58,7 @@ export const Users: CollectionConfig = {
       ],
       access: {
         // Only admins can update the role field
-        update: ({ req: { user } }) => {
-          return user?.role === 'admin'
-        },
+        update: adminsAdminAccess,
       },
     },
   ],

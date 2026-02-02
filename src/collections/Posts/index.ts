@@ -1,4 +1,5 @@
 import type { CollectionConfig, CollectionAfterChangeHook, FieldHook } from 'payload'
+import { authenticated, authenticatedOrPublished, admins } from '@/access'
 
 /**
  * Format slug from title
@@ -81,24 +82,14 @@ export const Posts: CollectionConfig = {
     afterChange: [revalidatePost],
   },
   access: {
-    // Public read access for published posts
-    read: ({ req: { user } }) => {
-      // Authenticated users can read all posts
-      if (user) return true
-
-      // Public can only read published posts
-      return {
-        _status: {
-          equals: 'published',
-        },
-      }
-    },
+    // Public read access for published posts, auth users can read all
+    read: authenticatedOrPublished,
     // Only authenticated users can create posts
-    create: ({ req: { user } }) => Boolean(user),
+    create: authenticated,
     // Only authenticated users can update posts
-    update: ({ req: { user } }) => Boolean(user),
+    update: authenticated,
     // Only admins can delete posts
-    delete: ({ req: { user } }) => user?.role === 'admin',
+    delete: admins,
   },
   // Enable draft/publish functionality
   versions: {

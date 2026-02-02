@@ -2,6 +2,7 @@ import type { CollectionConfig, CollectionAfterChangeHook, FieldHook } from 'pay
 import { Content } from '@/blocks/Content/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { CallToAction } from '@/blocks/CallToAction/config'
+import { authenticated, authenticatedOrPublished, admins } from '@/access'
 
 /**
  * Format slug from title
@@ -81,24 +82,14 @@ export const Pages: CollectionConfig = {
     afterChange: [revalidatePage],
   },
   access: {
-    // Public read access for published pages
-    read: ({ req: { user } }) => {
-      // Authenticated users can read all pages
-      if (user) return true
-
-      // Public can only read published pages
-      return {
-        _status: {
-          equals: 'published',
-        },
-      }
-    },
+    // Public read access for published pages, auth users can read all
+    read: authenticatedOrPublished,
     // Only authenticated users can create pages
-    create: ({ req: { user } }) => Boolean(user),
+    create: authenticated,
     // Only authenticated users can update pages
-    update: ({ req: { user } }) => Boolean(user),
+    update: authenticated,
     // Only admins can delete pages
-    delete: ({ req: { user } }) => user?.role === 'admin',
+    delete: admins,
   },
   // Enable draft/publish functionality
   versions: {

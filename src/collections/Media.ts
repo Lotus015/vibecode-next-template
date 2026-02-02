@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { authenticated, admins } from '@/access'
 
 /**
  * Media Collection
@@ -25,11 +26,11 @@ export const Media: CollectionConfig = {
     // Anyone can read media (public files)
     read: () => true,
     // Only authenticated users can upload/create
-    create: ({ req: { user } }) => Boolean(user),
+    create: authenticated,
     // Only authenticated users can update
-    update: ({ req: { user } }) => Boolean(user),
+    update: authenticated,
     // Only admins can delete media
-    delete: ({ req: { user } }) => user?.role === 'admin',
+    delete: admins,
   },
   upload: {
     // Filter to only allow image files
