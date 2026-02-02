@@ -1,0 +1,623 @@
+{
+  "project": "vibecode-next-template + Payload CMS",
+  "branchName": "main",
+  "description": "Extend vibecode-next-template with Payload CMS 3.x integration. This template will serve as a foundation for building CMS-powered websites with Next.js 16, React 19, and PostgreSQL. The template should build and pass all checks without requiring a database connection.",
+  "userStories": [
+    {
+      "id": "S1",
+      "priority": 1,
+      "title": "Install Payload CMS Dependencies",
+      "description": "Install Payload CMS 3.x and all required dependencies. Update package.json scripts and configuration for Payload support. Install: payload ^3.74.0, @payloadcms/db-postgres, @payloadcms/next, @payloadcms/richtext-lexical, @payloadcms/ui, graphql, sharp, sass, tsx. Add \"type\": \"module\" to package.json. Add scripts: generate:types, payload, seed.",
+      "acceptance": [
+        "payload ^3.74.0 installed",
+        "@payloadcms/db-postgres installed",
+        "@payloadcms/next installed",
+        "@payloadcms/richtext-lexical installed",
+        "graphql package installed",
+        "sharp package installed",
+        "sass package installed",
+        "tsx package installed",
+        "package.json has type: module",
+        "package.json has generate:types, payload, and seed scripts"
+      ],
+      "tests": [
+        "pnpm install && pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:21:21Z",
+      "durationSecs": 152
+    },
+    {
+      "id": "S2",
+      "priority": 2,
+      "title": "Create Source Directory Structure",
+      "description": "Reorganize project to use src/ directory structure matching Payload conventions. Create src/app/, src/collections/, src/globals/, src/blocks/, src/components/, src/lib/, src/hooks/, src/access/, src/utilities/, src/seed/, src/plugins/ directories. Update tsconfig.json paths.",
+      "acceptance": [
+        "src/ directory created",
+        "src/app/ directory for Next.js app router",
+        "src/collections/ directory for Payload collections",
+        "src/globals/ directory for Payload globals",
+        "src/blocks/ directory for content blocks",
+        "src/components/ directory exists",
+        "src/hooks/ directory for Payload hooks",
+        "src/access/ directory for access control",
+        "src/utilities/ directory for helpers",
+        "src/seed/ directory for seed scripts",
+        "tsconfig.json paths updated for src/ structure"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:25:01Z",
+      "durationSecs": 217
+    },
+    {
+      "id": "S3",
+      "priority": 3,
+      "title": "Create Payload Configuration File",
+      "description": "Create src/payload.config.ts with buildConfig, PostgreSQL adapter via DATABASE_URL, Lexical editor, admin panel config, TypeScript types output, PAYLOAD_SECRET config, importMap config. Must work without database for builds.",
+      "acceptance": [
+        "src/payload.config.ts created with buildConfig",
+        "PostgreSQL adapter configured via DATABASE_URL",
+        "Lexical rich text editor configured",
+        "Admin panel configuration with meta title",
+        "TypeScript types output to src/payload-types.ts",
+        "PAYLOAD_SECRET configured via environment variable",
+        "importMap configuration for admin components"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:26:46Z",
+      "durationSecs": 102
+    },
+    {
+      "id": "S4",
+      "priority": 4,
+      "title": "Create App Directory with Route Groups",
+      "description": "Create Next.js app directory with (payload) and (frontend) route groups. Set up admin panel routes at /admin, REST API at /api, GraphQL at /api/graphql. Frontend pages in (frontend) group.",
+      "acceptance": [
+        "src/app/(payload)/ route group for admin",
+        "src/app/(payload)/admin/[[...segments]]/page.tsx for admin UI",
+        "src/app/(payload)/api/[[...slug]]/route.ts for REST API",
+        "src/app/(payload)/api/graphql/route.ts for GraphQL",
+        "src/app/(payload)/layout.tsx with RootLayout",
+        "src/app/(frontend)/ route group for public pages",
+        "src/app/(frontend)/layout.tsx with frontend layout",
+        "src/app/(frontend)/page.tsx as homepage",
+        "src/app/(frontend)/globals.css exists"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:33:25Z",
+      "durationSecs": 396
+    },
+    {
+      "id": "S5",
+      "priority": 5,
+      "title": "Create Users Collection",
+      "description": "Create Users collection for authentication with fields: email, password (auth), name, role (admin/editor/user). Enable auth config. Restrict admin access to admin role.",
+      "acceptance": [
+        "src/collections/Users/index.ts with CollectionConfig",
+        "Fields: email (required), password (auth), name, role",
+        "Auth configuration enabled",
+        "Admin access restricted to admin role",
+        "TypeScript types exported"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:35:33Z",
+      "durationSecs": 125
+    },
+    {
+      "id": "S6",
+      "priority": 6,
+      "title": "Create Media Collection",
+      "description": "Create Media collection for file uploads with image optimization. Fields: alt, caption. Configure mimeTypes for images, image sizes (thumbnail, card, hero).",
+      "acceptance": [
+        "src/collections/Media.ts with CollectionConfig",
+        "Upload configuration with mimeTypes filter",
+        "Fields: alt (text), caption (text)",
+        "Image sizes defined (thumbnail, card, hero)",
+        "Admin thumbnail configuration"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:37:32Z",
+      "durationSecs": 116
+    },
+    {
+      "id": "S7",
+      "priority": 7,
+      "title": "Create Pages Collection",
+      "description": "Create Pages collection for static pages. Fields: title, slug (unique), publishedAt, hero group (type, heading, subheading, media, richText), layout (blocks array), meta group for SEO. Add hooks for slug generation and revalidation.",
+      "acceptance": [
+        "src/collections/Pages/index.ts with CollectionConfig",
+        "Fields: title, slug (unique, indexed), publishedAt",
+        "Hero group field with type, heading, subheading, media, richText",
+        "Layout field (blocks array)",
+        "Meta group for SEO (title, description, image)",
+        "Hooks for slug generation and revalidation",
+        "Access control: published pages are public"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:40:08Z",
+      "durationSecs": 153
+    },
+    {
+      "id": "S8",
+      "priority": 8,
+      "title": "Create Posts Collection",
+      "description": "Create Posts collection for blog posts. Fields: title, slug (unique), excerpt, content (richText), featuredImage, categories, author, publishedAt, meta. Set access control for published posts.",
+      "acceptance": [
+        "src/collections/Posts/index.ts with CollectionConfig",
+        "Fields: title, slug, excerpt, content (richText)",
+        "featuredImage relationship to Media",
+        "categories relationship to Categories (hasMany)",
+        "author relationship to Users",
+        "publishedAt date field",
+        "Meta group for SEO",
+        "Access control: published posts are public"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:43:17Z",
+      "durationSecs": 186
+    },
+    {
+      "id": "S9",
+      "priority": 9,
+      "title": "Create Categories Collection",
+      "description": "Create Categories collection for organizing posts. Fields: title, slug, parent (self-reference for nesting). Add breadcrumbs field for nested docs.",
+      "acceptance": [
+        "src/collections/Categories.ts with CollectionConfig",
+        "Fields: title, slug",
+        "parent relationship to self for nested categories",
+        "Breadcrumbs field for nested docs plugin",
+        "Proper indexing on slug"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:45:11Z",
+      "durationSecs": 111
+    },
+    {
+      "id": "S10",
+      "priority": 10,
+      "title": "Create Header Global",
+      "description": "Create Header global config with logo, navItems array, CTA button. Create Header React component that fetches and renders navigation. Mobile-responsive with hamburger menu.",
+      "acceptance": [
+        "src/Header/config.ts with GlobalConfig",
+        "Fields: logo (upload), navItems (array with label, link)",
+        "CTA button field (label, link, variant)",
+        "src/Header/Component.tsx React component",
+        "Component fetches and renders navigation",
+        "Mobile-responsive with hamburger menu",
+        "Hooks for revalidation"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:48:36Z",
+      "durationSecs": 201
+    },
+    {
+      "id": "S11",
+      "priority": 11,
+      "title": "Create Footer Global",
+      "description": "Create Footer global config with logo, columns array, socialLinks, copyright. Create Footer React component for multi-column layout.",
+      "acceptance": [
+        "src/Footer/config.ts with GlobalConfig",
+        "Fields: logo, columns (array with title and links), socialLinks, copyright",
+        "src/Footer/Component.tsx React component",
+        "Component renders multi-column footer",
+        "Social links with icons",
+        "Hooks for revalidation"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:51:23Z",
+      "durationSecs": 164
+    },
+    {
+      "id": "S12",
+      "priority": 12,
+      "title": "Create SiteSettings Global",
+      "description": "Create SiteSettings global for site-wide configuration. Fields: siteName, siteDescription, defaultOgImage, contact info (email, phone, address), socialLinks array, analytics IDs.",
+      "acceptance": [
+        "src/globals/SiteSettings.ts with GlobalConfig",
+        "Fields: siteName, siteDescription, defaultOgImage",
+        "Contact fields: email, phone, address",
+        "Social links array",
+        "Analytics IDs (optional text fields)",
+        "Default values for required fields"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:53:33Z",
+      "durationSecs": 127
+    },
+    {
+      "id": "S13",
+      "priority": 13,
+      "title": "Create Content Block",
+      "description": "Create Content block for rich text sections. Fields: columns (select 1/2/3), columnOne/Two/Three (richText). Create Component.tsx with responsive grid.",
+      "acceptance": [
+        "src/blocks/Content/config.ts with Block definition",
+        "Fields: columns (select 1/2/3), columnOne, columnTwo, columnThree (richText)",
+        "src/blocks/Content/Component.tsx for rendering",
+        "Responsive grid layout based on column count"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:56:37Z",
+      "durationSecs": 181
+    },
+    {
+      "id": "S14",
+      "priority": 14,
+      "title": "Create MediaBlock",
+      "description": "Create MediaBlock for image/video content. Fields: media (upload), caption, position. Create Component.tsx with next/image.",
+      "acceptance": [
+        "src/blocks/MediaBlock/config.ts with Block definition",
+        "Fields: media (upload), caption (text), position (left/center/right)",
+        "src/blocks/MediaBlock/Component.tsx for rendering",
+        "Responsive image with next/image",
+        "Optional caption display"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T18:58:49Z",
+      "durationSecs": 129
+    },
+    {
+      "id": "S15",
+      "priority": 15,
+      "title": "Create CallToAction Block",
+      "description": "Create CallToAction block for promotional sections. Fields: heading, subheading, richText, buttons array, background options. Create Component.tsx.",
+      "acceptance": [
+        "src/blocks/CallToAction/config.ts with Block definition",
+        "Fields: heading, subheading, richText, buttons array (label, link, variant)",
+        "Background color/style options",
+        "src/blocks/CallToAction/Component.tsx for rendering",
+        "Centered layout with prominent styling"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": true,
+      "completedAt": "2026-02-02T19:01:18Z",
+      "durationSecs": 146
+    },
+    {
+      "id": "S16",
+      "priority": 16,
+      "title": "Create RenderBlocks Component",
+      "description": "Create component that renders array of blocks dynamically. Map block types to components. Handle unknown blocks gracefully. Export block configs from src/blocks/index.ts.",
+      "acceptance": [
+        "src/blocks/RenderBlocks.tsx component",
+        "Maps block types to components (Content, MediaBlock, CallToAction)",
+        "Handles unknown block types gracefully",
+        "TypeScript type safety for block rendering",
+        "Export block configs from src/blocks/index.ts"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S17",
+      "priority": 17,
+      "title": "Register Collections and Globals in Config",
+      "description": "Update payload.config.ts to register all collections (Users, Media, Pages, Posts, Categories) and globals (Header, Footer, SiteSettings).",
+      "acceptance": [
+        "All collections imported and registered: Users, Media, Pages, Posts, Categories",
+        "All globals imported and registered: Header, Footer, SiteSettings",
+        "Collections array properly typed",
+        "Globals array properly typed",
+        "Build succeeds with all registrations"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S18",
+      "priority": 18,
+      "title": "Create Access Control Functions",
+      "description": "Create reusable access control functions: authenticated.ts, authenticatedOrPublished.ts, admins.ts, adminsOrSelf.ts. Apply to relevant collections.",
+      "acceptance": [
+        "src/access/authenticated.ts - requires authenticated user",
+        "src/access/authenticatedOrPublished.ts - public read for published, auth for edit",
+        "src/access/admins.ts - admin role only",
+        "src/access/adminsOrSelf.ts - admins or the user themselves",
+        "Functions properly typed with Access type from Payload",
+        "Applied to relevant collections"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S19",
+      "priority": 19,
+      "title": "Create Utility Functions",
+      "description": "Create utility functions: getURL.ts (server/client URL helpers), generateMeta.ts (SEO metadata), mergeOpenGraph.ts, formatDateTime.ts, cn.ts.",
+      "acceptance": [
+        "src/utilities/getURL.ts with getServerSideURL, getClientSideURL",
+        "src/utilities/generateMeta.ts for SEO metadata generation",
+        "src/utilities/mergeOpenGraph.ts for merging OG meta",
+        "src/utilities/formatDateTime.ts for date formatting",
+        "All functions properly typed and exported"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S20",
+      "priority": 20,
+      "title": "Create Payload Hooks",
+      "description": "Create Payload hooks: revalidatePath.ts, populatePublishedAt.ts, formatSlug.ts. Apply hooks to relevant collections.",
+      "acceptance": [
+        "src/hooks/revalidatePath.ts for revalidating Next.js paths",
+        "src/hooks/populatePublishedAt.ts for auto-setting publishedAt",
+        "src/hooks/formatSlug.ts for slug generation from title",
+        "Hooks properly typed with CollectionAfterChangeHook etc.",
+        "Hooks applied to relevant collections"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S21",
+      "priority": 21,
+      "title": "Create Frontend Layout Components",
+      "description": "Create main layout wrapper that fetches Header, Footer, SiteSettings and passes to components. Include try/catch with fallbacks.",
+      "acceptance": [
+        "src/app/(frontend)/layout.tsx fetches Header, Footer, SiteSettings",
+        "Passes data to Header and Footer components",
+        "Includes providers if needed",
+        "try/catch with fallbacks for all Payload fetches",
+        "Proper TypeScript types for layout props"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S22",
+      "priority": 22,
+      "title": "Create Homepage with Data Fetching",
+      "description": "Create homepage that fetches page data from Payload. Render hero section and content blocks. Include try/catch with fallback content.",
+      "acceptance": [
+        "src/app/(frontend)/page.tsx fetches homepage from Pages",
+        "Renders hero section from page data",
+        "Renders content blocks using RenderBlocks",
+        "try/catch with fallback content when no data",
+        "generateMetadata function for SEO",
+        "Server Component for data fetching"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S23",
+      "priority": 23,
+      "title": "Create Dynamic Page Route",
+      "description": "Create [slug] dynamic route for any page. Fetch by slug, render hero and blocks. Use notFound() for missing pages.",
+      "acceptance": [
+        "src/app/(frontend)/[slug]/page.tsx for dynamic pages",
+        "Fetches page by slug from Pages collection",
+        "Renders hero and blocks",
+        "notFound() for missing pages",
+        "generateStaticParams for static generation",
+        "generateMetadata for SEO"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S24",
+      "priority": 24,
+      "title": "Create Blog Listing Page",
+      "description": "Create blog listing page showing all posts. Display featured image, title, excerpt, date. Include pagination support.",
+      "acceptance": [
+        "src/app/(frontend)/posts/page.tsx for blog listing",
+        "Fetches posts from Posts collection",
+        "Displays posts in grid/list layout",
+        "Shows featured image, title, excerpt, date",
+        "Links to individual post pages",
+        "Basic pagination support"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S25",
+      "priority": 25,
+      "title": "Create Blog Post Detail Page",
+      "description": "Create individual blog post page. Fetch by slug, render title, featured image, content. Include author, date, related posts.",
+      "acceptance": [
+        "src/app/(frontend)/posts/[slug]/page.tsx for post detail",
+        "Fetches post by slug from Posts collection",
+        "Renders title, featured image, content (richText)",
+        "Shows author and date",
+        "Related posts section (optional)",
+        "generateMetadata for SEO",
+        "notFound() for missing posts"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S26",
+      "priority": 26,
+      "title": "Add Payload Plugins",
+      "description": "Install and configure Payload plugins: plugin-seo, plugin-redirects, plugin-nested-docs. Create src/plugins/index.ts. Apply SEO fields to collections.",
+      "acceptance": [
+        "@payloadcms/plugin-seo installed and configured",
+        "@payloadcms/plugin-redirects installed and configured",
+        "@payloadcms/plugin-nested-docs installed and configured",
+        "src/plugins/index.ts exports plugins array",
+        "Plugins registered in payload.config.ts",
+        "SEO fields added to Pages and Posts collections"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S27",
+      "priority": 27,
+      "title": "Create Environment Configuration",
+      "description": "Set up environment variables. Create .env.example with DATABASE_URL, PAYLOAD_SECRET, NEXT_PUBLIC_SERVER_URL. Add TypeScript declarations.",
+      "acceptance": [
+        ".env.example with DATABASE_URL, PAYLOAD_SECRET, NEXT_PUBLIC_SERVER_URL",
+        "src/env.ts or lib/env.ts for environment validation",
+        "TypeScript declarations for environment variables",
+        "vercel.json updated for deployment",
+        ".gitignore includes .env"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S28",
+      "priority": 28,
+      "title": "Create Seed Script",
+      "description": "Create seed script to populate database with demo content. Seed admin user, pages, posts, categories, globals. Make idempotent.",
+      "acceptance": [
+        "src/seed/index.ts main seed script",
+        "Seeds admin user (admin@example.com)",
+        "Seeds sample pages (Home, About)",
+        "Seeds sample posts (2-3 posts)",
+        "Seeds sample categories",
+        "Seeds Header, Footer, SiteSettings globals",
+        "Idempotent - can run multiple times safely",
+        "Uses Payload Local API",
+        "Runnable via pnpm seed"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S29",
+      "priority": 29,
+      "title": "Update Tests for Payload Integration",
+      "description": "Update existing tests and add new tests for Payload components. Mock Payload data in tests. Ensure all tests pass.",
+      "acceptance": [
+        "Existing tests still pass with new structure",
+        "Tests for utility functions",
+        "Tests for block components",
+        "Tests for RenderBlocks component",
+        "Mock Payload data in tests where needed",
+        "All tests pass: pnpm test"
+      ],
+      "tests": [
+        "pnpm test"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S30",
+      "priority": 30,
+      "title": "Update Documentation",
+      "description": "Update README and CLAUDE.md with Payload CMS documentation. Include database setup, environment variables, admin access, seed usage.",
+      "acceptance": [
+        "README.md updated with Payload CMS section",
+        "Database setup instructions",
+        "Environment variables documentation",
+        "Admin panel access instructions",
+        "Seed script usage",
+        "Development workflow",
+        "CLAUDE.md updated with CMS patterns"
+      ],
+      "tests": [
+        "test -f README.md && test -f CLAUDE.md"
+      ],
+      "passes": false,
+      "completedAt": null
+    },
+    {
+      "id": "S31",
+      "priority": 31,
+      "title": "Use Official Payload Rich Text Renderer",
+      "description": "Replace custom Lexical rich text rendering with official @payloadcms/richtext-lexical/react package. The current custom implementation in Content/Component.tsx works but doesn't handle all Lexical node types. Use the official RichText component for proper rendering of all content types including links, images, embeds, etc.",
+      "acceptance": [
+        "@payloadcms/richtext-lexical already installed (verify)",
+        "Import RichText from @payloadcms/richtext-lexical/react",
+        "Update src/blocks/Content/Component.tsx to use official RichText",
+        "Update src/blocks/MediaBlock/Component.tsx if it uses rich text",
+        "Update any other components using custom rich text rendering",
+        "Remove custom renderNode/renderFormattedText functions if no longer needed",
+        "Create src/components/RichText.tsx wrapper component for consistent usage",
+        "Rich text renders correctly with all formatting (bold, italic, links, lists, headings, images)",
+        "Proper TypeScript types for rich text content"
+      ],
+      "tests": [
+        "pnpm build"
+      ],
+      "passes": false,
+      "completedAt": null
+    }
+  ]
+}

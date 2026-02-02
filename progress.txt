@@ -356,3 +356,54 @@ Gotchas for future stories:
 - The RichText component created here is a basic implementation; S16 (RenderBlocks) may refine it
 - S14 (MediaBlock) and S15 (CallToAction) will follow the same block structure pattern
 - Each block component should handle its own responsive layout
+
+=== Iteration 14 - S14 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/blocks/MediaBlock/ directory with config.ts, Component.tsx, and index.ts
+- MediaBlock follows the same block structure pattern as Content block
+- Fields implemented: media (upload to 'media'), caption (text), position (select: left/center/right)
+- Using next/image for optimized responsive images with proper width, height, and sizes attributes
+- Media upload fields can be string (ID only) or object (populated) - component handles both cases
+- Position field uses alignment classes (mr-auto, mx-auto, ml-auto) for left/center/right positioning
+- Optional caption displayed below image using figcaption element
+- Using figure/figcaption semantic HTML for image with caption
+- Added MediaBlock to Pages collection layout.blocks array alongside Content block
+- Block interfaceName set to 'MediaBlock' for TypeScript type generation
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (compiled in 5.8s)
+
+Gotchas for future stories:
+- Upload fields in Payload can return either string (ID) or populated object - always check and handle both
+- next/image requires width and height - use defaults if media dimensions aren't available
+- The sizes prop on Image helps browser choose appropriate image for viewport
+- S15 (CallToAction) will follow the same block structure pattern
+- S16 (RenderBlocks) will need to map 'mediaBlock' slug to MediaBlockComponent
+
+=== Iteration 15 - S15 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/blocks/CallToAction/ directory with config.ts, Component.tsx, and index.ts
+- CallToAction follows the same block structure pattern as Content and MediaBlock
+- Fields implemented: heading (required), subheading, richText, buttons (array), backgroundColor (select)
+- Buttons array has fields: label, link, variant (default/secondary/outline/ghost)
+- Background options: default, muted, primary, secondary, accent
+- Component uses shadcn/ui Button component with asChild and Link for navigation
+- Responsive button layout: flex-col on mobile, flex-row on sm+
+- Centered layout using max-w-3xl and text-center
+- Rich text rendering reused from Content block pattern
+- Block slug is 'callToAction' (camelCase) for consistency
+- interfaceName set to 'CallToActionBlock' for TypeScript type generation
+- Added CallToAction to Pages collection layout.blocks array
+
+Test Results:
+- pnpm build: SUCCESS (compiled in 6.5s)
+
+Gotchas for future stories:
+- For CTA buttons, use shadcn/ui Button with asChild pattern and Link for proper navigation
+- Background color classes need to include text color for primary/secondary/accent backgrounds
+- minRows/maxRows on array fields limits number of items (e.g., maxRows: 3 for buttons)
+- S16 (RenderBlocks) will need to map 'callToAction' slug to CallToActionComponent
