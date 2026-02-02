@@ -1,4 +1,5 @@
 import type { CollectionConfig, CollectionAfterChangeHook, FieldHook } from 'payload'
+import { Content } from '@/blocks/Content/config'
 
 /**
  * Format slug from title
@@ -197,8 +198,7 @@ export const Pages: CollectionConfig = {
       name: 'layout',
       type: 'blocks',
       label: 'Layout',
-      // Blocks will be added as they are created in S13-S16
-      blocks: [],
+      blocks: [Content],
       admin: {
         description: 'Add content blocks to build the page layout',
       },

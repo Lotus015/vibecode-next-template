@@ -267,3 +267,92 @@ Gotchas for future stories:
 - The variant field options match shadcn/ui Button variants for consistency
 - S11 (Footer) and S12 (SiteSettings) will follow similar Global patterns
 - S21 (Frontend Layout) will fetch and pass Header data to this component
+
+=== Iteration 11 - S11 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/Footer/config.ts with Payload GlobalConfig for site footer
+- Follows same pattern as Header: GlobalConfig type, GlobalAfterChangeHook for revalidation
+- Fields implemented: logo (upload), columns (array with title and links), socialLinks (array), copyright (text)
+- columns array allows multi-column footer layout - max 4 columns with title and nested links array
+- socialLinks array uses select for platform (determines icon) and text for URL
+- Platform options: twitter, facebook, instagram, linkedin, youtube, github, tiktok
+- Created src/Footer/Component.tsx - client component with multi-column grid layout
+- Used lucide-react icons for social platforms (Twitter, Facebook, Instagram, Linkedin, Youtube, Github)
+- TikTok icon not available in lucide-react - created custom SVG component
+- getSocialIcon helper maps platform string to icon component
+- Grid uses lg:col-span for responsive column widths (logo 3, each column 2)
+- Bottom section with social links and copyright separated by border-t
+- Handles both populated and unpopulated logo states (same pattern as Header)
+- Created src/Footer/index.ts for clean exports of config and component
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (13 tests in 3 files)
+- pnpm build: SUCCESS (compiled in 6.1s)
+
+Gotchas for future stories:
+- Some icons not available in lucide-react (TikTok) - use custom SVG components
+- Multi-column footer uses nested arrays (columns > links)
+- Grid column spans: use lg:col-span-X for responsive footer layouts
+- Social icons should use target="_blank" rel="noopener noreferrer" for external links
+- S12 (SiteSettings) will follow similar Global pattern
+- S21 (Frontend Layout) will fetch and pass Footer data to this component
+
+=== Iteration 12 - S12 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/globals/SiteSettings.ts with Payload GlobalConfig for site-wide settings
+- Used the src/globals/ directory (different from Header/Footer which are in src/Header and src/Footer)
+- Fields organized into logical groups: general, contact, socialLinks (array), analytics
+- General group: siteName (required with default), siteDescription (with default), defaultOgImage (upload)
+- Contact group: email (type: 'email'), phone (text), address (textarea)
+- Social links reuses the same platform options pattern from Footer (consistent UX in admin)
+- Analytics group: googleAnalyticsId, googleTagManagerId, facebookPixelId - all optional text fields
+- Default values on required fields (siteName, siteDescription) ensure the global is always valid
+- Using type: 'email' for email field provides built-in validation in the admin panel
+- Revalidation hook follows same pattern as Header and Footer globals
+- Access control: public read, authenticated update (consistent with other globals)
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (compiled in 5.9s)
+
+Gotchas for future stories:
+- Globals can be placed in src/globals/ directory or standalone directories like Header/Footer
+- Use type: 'email' for email fields - Payload provides validation
+- Group fields help organize complex settings into logical sections in the admin UI
+- Default values are useful for required fields to prevent validation errors on empty globals
+- S17 will verify all collections and globals are properly registered (already done incrementally)
+- S19 (utilities) may use SiteSettings for generateMeta function
+- S21 (Frontend Layout) will fetch SiteSettings for meta tags and analytics injection
+
+=== Iteration 13 - S13 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/blocks/Content/ directory with config.ts, Component.tsx, and index.ts
+- Payload blocks use Block type (not CollectionConfig or GlobalConfig)
+- Block config requires slug, labels, and fields; interfaceName is optional but helps with TypeScript
+- Fields use admin.condition callback for conditional visibility (same pattern as other Payload fields)
+- Rich text fields store content in Lexical JSON format with root.children array
+- Created a minimal RichText renderer that handles common Lexical node types (paragraph, heading, list, quote, text with formatting)
+- Text formatting uses bitwise flags: IS_BOLD=1, IS_ITALIC=2, IS_STRIKETHROUGH=4, IS_UNDERLINE=8, IS_CODE=16
+- Component uses responsive grid with Tailwind: grid-cols-1 on mobile, grid-cols-2 on md, grid-cols-3 on lg
+- Import and add block to Pages collection's layout.blocks array
+- Block directory structure mirrors Header/Footer pattern: config.ts, Component.tsx, index.ts
+- All tests continue to pass (13 tests in 3 files)
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (13 tests in 3 files)
+- pnpm build: SUCCESS (compiled in 5.7s)
+
+Gotchas for future stories:
+- Payload blocks are imported and added to blocks array in collection fields (e.g., Pages layout field)
+- Rich text rendering is non-trivial - may need @payloadcms/richtext-lexical/react for production rendering
+- The RichText component created here is a basic implementation; S16 (RenderBlocks) may refine it
+- S14 (MediaBlock) and S15 (CallToAction) will follow the same block structure pattern
+- Each block component should handle its own responsive layout
