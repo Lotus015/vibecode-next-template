@@ -40,33 +40,25 @@ export const demoFooterData: FooterData = {
       title: 'Company',
       links: [
         { label: 'About Us', link: '/about' },
-        { label: 'Careers', link: '/careers' },
+        { label: 'Services', link: '/services' },
         { label: 'Contact', link: '/contact' },
-      ],
-    },
-    {
-      title: 'Services',
-      links: [
-        { label: 'Web Development', link: '/services' },
-        { label: 'Design', link: '/services' },
-        { label: 'Consulting', link: '/services' },
       ],
     },
     {
       title: 'Resources',
       links: [
         { label: 'Blog', link: '/posts' },
-        { label: 'Documentation', link: '/docs' },
-        { label: 'Support', link: '/support' },
+        { label: 'Documentation', link: 'https://github.com/jigjoy-io' },
+        { label: 'Discord', link: 'https://discord.gg/xQR6DNtY' },
       ],
     },
   ],
   socialLinks: [
-    { platform: 'twitter', url: 'https://twitter.com' },
-    { platform: 'github', url: 'https://github.com' },
-    { platform: 'linkedin', url: 'https://linkedin.com' },
+    { platform: 'discord', url: 'https://discord.gg/xQR6DNtY' },
+    { platform: 'github', url: 'https://github.com/jigjoy-io' },
+    { platform: 'globe', url: 'https://jigjoy.io' },
   ],
-  copyright: '© 2025 Vibecode. All rights reserved.',
+  copyright: '© 2025 Jigjoy. All rights reserved.',
 }
 
 /**
@@ -74,7 +66,7 @@ export const demoFooterData: FooterData = {
  */
 export const demoHeroData: HeroData = {
   type: 'highImpact',
-  heading: 'Build Amazing Websites with Payload CMS',
+  heading: 'AI-Safe Next.js Template',
   subheading: 'A modern, type-safe template combining Next.js 16, React 19, and Payload CMS for rapid development.',
   media: null,
 }
@@ -171,8 +163,8 @@ export const demoHomeBlocks = [
     subheading: 'Connect your database and start building your next project today.',
     richText: null,
     buttons: [
-      { label: 'View Documentation', link: '/docs', variant: 'default' },
-      { label: 'GitHub Repository', link: 'https://github.com', variant: 'outline' },
+      { label: 'View on GitHub', link: 'https://github.com/jigjoy-io', variant: 'default' },
+      { label: 'Join Discord', link: 'https://discord.gg/xQR6DNtY', variant: 'outline' },
     ],
     backgroundColor: 'muted',
   },
@@ -196,7 +188,7 @@ export const demoPosts: PostCardData[] = [
     slug: 'building-type-safe-apis',
     excerpt: 'Discover how Payload CMS automatically generates TypeScript types for your collections and globals.',
     featuredImage: null,
-    publishedAt: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+    publishedAt: new Date(Date.now() - 86400000).toISOString(),
   },
   {
     id: 'demo-post-3',
@@ -204,7 +196,7 @@ export const demoPosts: PostCardData[] = [
     slug: 'deploying-to-vercel',
     excerpt: 'A step-by-step guide to deploying your Payload CMS application to Vercel with a PostgreSQL database.',
     featuredImage: null,
-    publishedAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
+    publishedAt: new Date(Date.now() - 172800000).toISOString(),
   },
 ]
 
@@ -213,18 +205,257 @@ export const demoPosts: PostCardData[] = [
  */
 export const demoSiteSettings = {
   general: {
-    siteName: 'Vibecode Next Template',
-    siteDescription: 'A modern Next.js template with Payload CMS integration',
+    siteName: 'Jigjoy',
+    siteDescription: 'AI-safe Next.js template with Payload CMS integration',
     defaultOgImage: null,
   },
   contact: {
-    email: 'hello@example.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Main Street, City, Country',
+    email: 'hello@jigjoy.io',
+    discord: 'https://discord.gg/xQR6DNtY',
+    github: 'https://github.com/jigjoy-io',
+    website: 'https://jigjoy.io',
   },
   analytics: {
     googleAnalyticsId: null,
     googleTagManagerId: null,
     facebookPixelId: null,
   },
+}
+
+/**
+ * Demo Page Data structure
+ */
+export interface DemoPageData {
+  id: string
+  title: string
+  slug: string
+  hero?: HeroData | null
+  layout?: Block[] | null
+}
+
+/**
+ * Demo Pages for static routes (about, services, contact)
+ */
+export const demoPages: Record<string, DemoPageData> = {
+  about: {
+    id: 'demo-about',
+    title: 'About Us',
+    slug: 'about',
+    hero: {
+      type: 'lowImpact',
+      heading: 'About Jigjoy',
+      subheading: 'We build AI-safe templates for modern web development.',
+      media: null,
+    },
+    layout: [
+      {
+        id: 'about-content-1',
+        blockType: 'content',
+        columns: '1',
+        columnOne: {
+          root: {
+            type: 'root',
+            version: 1,
+            children: [
+              {
+                type: 'heading',
+                tag: 'h2',
+                version: 1,
+                children: [{ type: 'text', text: 'Our Mission', version: 1 }],
+              },
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [
+                  {
+                    type: 'text',
+                    version: 1,
+                    text: 'Jigjoy provides production-ready templates that are designed to work seamlessly with AI coding assistants. Our templates follow strict conventions and patterns that help AI tools understand and extend your codebase safely.',
+                  },
+                ],
+              },
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [
+                  {
+                    type: 'text',
+                    version: 1,
+                    text: 'Whether you\'re building a SPA, a full-stack Next.js app, a mobile app, or a chatbot, our templates give you a solid foundation with TypeScript, modern tooling, and best practices baked in.',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        id: 'about-cta-1',
+        blockType: 'callToAction',
+        heading: 'Join Our Community',
+        subheading: 'Connect with other developers building with Jigjoy templates.',
+        richText: null,
+        buttons: [
+          { label: 'Join Discord', link: 'https://discord.gg/xQR6DNtY', variant: 'default' },
+          { label: 'GitHub', link: 'https://github.com/jigjoy-io', variant: 'outline' },
+        ],
+        backgroundColor: 'muted',
+      },
+    ] as unknown as Block[],
+  },
+  services: {
+    id: 'demo-services',
+    title: 'Services',
+    slug: 'services',
+    hero: {
+      type: 'lowImpact',
+      heading: 'Our Templates',
+      subheading: 'Production-ready templates for every use case.',
+      media: null,
+    },
+    layout: [
+      {
+        id: 'services-content-1',
+        blockType: 'content',
+        columns: '3',
+        columnOne: {
+          root: {
+            type: 'root',
+            version: 1,
+            children: [
+              {
+                type: 'heading',
+                tag: 'h3',
+                version: 1,
+                children: [{ type: 'text', text: 'Next.js Template', version: 1 }],
+              },
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [
+                  {
+                    type: 'text',
+                    version: 1,
+                    text: 'Full-stack Next.js 16 with Payload CMS, PostgreSQL, and TypeScript. Perfect for content-driven websites.',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        columnTwo: {
+          root: {
+            type: 'root',
+            version: 1,
+            children: [
+              {
+                type: 'heading',
+                tag: 'h3',
+                version: 1,
+                children: [{ type: 'text', text: 'SPA Template', version: 1 }],
+              },
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [
+                  {
+                    type: 'text',
+                    version: 1,
+                    text: 'Vite + React + Supabase for blazing-fast single-page applications with real-time features.',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        columnThree: {
+          root: {
+            type: 'root',
+            version: 1,
+            children: [
+              {
+                type: 'heading',
+                tag: 'h3',
+                version: 1,
+                children: [{ type: 'text', text: 'Mobile Template', version: 1 }],
+              },
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [
+                  {
+                    type: 'text',
+                    version: 1,
+                    text: 'React Native + Expo for cross-platform mobile apps with native performance.',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ] as unknown as Block[],
+  },
+  contact: {
+    id: 'demo-contact',
+    title: 'Contact',
+    slug: 'contact',
+    hero: {
+      type: 'lowImpact',
+      heading: 'Get in Touch',
+      subheading: 'Have questions? We\'d love to hear from you.',
+      media: null,
+    },
+    layout: [
+      {
+        id: 'contact-content-1',
+        blockType: 'content',
+        columns: '1',
+        columnOne: {
+          root: {
+            type: 'root',
+            version: 1,
+            children: [
+              {
+                type: 'heading',
+                tag: 'h2',
+                version: 1,
+                children: [{ type: 'text', text: 'Connect With Us', version: 1 }],
+              },
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [
+                  {
+                    type: 'text',
+                    version: 1,
+                    text: 'The best way to reach us is through our Discord community where you can get help, share your projects, and connect with other developers.',
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        id: 'contact-cta-1',
+        blockType: 'callToAction',
+        heading: 'Join the Community',
+        subheading: 'Get support, share ideas, and build together.',
+        richText: null,
+        buttons: [
+          { label: 'Join Discord', link: 'https://discord.gg/xQR6DNtY', variant: 'default' },
+          { label: 'Visit Website', link: 'https://jigjoy.io', variant: 'outline' },
+        ],
+        backgroundColor: 'muted',
+      },
+    ] as unknown as Block[],
+  },
+}
+
+/**
+ * Get a demo page by slug
+ */
+export function getDemoPage(slug: string): DemoPageData | null {
+  return demoPages[slug] || null
 }

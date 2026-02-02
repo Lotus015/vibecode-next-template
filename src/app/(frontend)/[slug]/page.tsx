@@ -6,6 +6,7 @@ import { Hero, type HeroData } from '@/components/Hero'
 import { RenderBlocks, type Block } from '@/blocks/RenderBlocks'
 import { getPayload } from '@/utilities'
 import { generateMeta } from '@/utilities/generateMeta'
+import { getDemoPage, type DemoPageData } from '@/data/demo-content'
 
 /**
  * Page data structure matching the Pages collection
@@ -37,11 +38,12 @@ interface PageParams {
 
 /**
  * Fetches a page by slug from Payload CMS
+ * Falls back to demo page data when CMS is unavailable
  *
  * @param slug - The URL slug of the page
  * @returns The page data or null if not found
  */
-async function getPageBySlug(slug: string): Promise<PageData | null> {
+async function getPageBySlug(slug: string): Promise<PageData | DemoPageData | null> {
   try {
     const payload = await getPayload()
     const pages = await payload.find({
@@ -59,10 +61,12 @@ async function getPageBySlug(slug: string): Promise<PageData | null> {
       return pages.docs[0] as unknown as PageData
     }
 
-    return null
+    // If no page found in CMS, try demo pages
+    return getDemoPage(slug)
   } catch (error) {
     console.error(`Failed to fetch page with slug "${slug}":`, error)
-    return null
+    // Fall back to demo pages when CMS is unavailable
+    return getDemoPage(slug)
   }
 }
 
