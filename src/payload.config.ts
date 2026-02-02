@@ -9,6 +9,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Categories } from './collections/Categories'
 import { Header } from './Header/config'
+import { Footer } from './Footer/config'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -28,7 +29,7 @@ export default buildConfig({
   collections: [Users, Media, Pages, Posts, Categories],
 
   // Globals
-  globals: [Header],
+  globals: [Header, Footer],
 
   // Rich text editor configuration
   editor: lexicalEditor(),
