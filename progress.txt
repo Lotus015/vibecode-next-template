@@ -516,3 +516,34 @@ Gotchas for future stories:
 - S21 (Frontend Layout) will use generateMeta for page metadata
 - S22/S23 (Pages) will use generateMeta in generateMetadata functions
 - The utilities/index.ts provides a single import point: `import { cn, formatDateTime, ... } from '@/utilities'`
+
+=== Iteration 20 - S20 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created three reusable Payload hook files in src/hooks/:
+  - formatSlug.ts - FieldHook for slug generation from title field
+  - populatePublishedAt.ts - CollectionBeforeChangeHook for auto-setting publishedAt
+  - revalidatePath.ts - CollectionAfterChangeHook for Next.js path revalidation
+- Created src/hooks/index.ts to export all Payload hooks (separate from React hooks like use-mobile.ts)
+- IMPORTANT: Next.js 16 changed revalidateTag API - now requires a second argument (cacheLife profile)
+  - Use revalidateTag(tag, 'max') for SWR behavior (recommended)
+  - Use revalidateTag(tag, { expire: 0 }) for immediate expiration (webhooks)
+  - Single-argument form is deprecated
+- formatSlug hook handles both manual input (formats it) and auto-generation from title
+- populatePublishedAt checks _status === 'published' and only sets if not already set
+- revalidatePath provides factory functions (revalidatePathAfterChange, revalidatePathAfterDelete)
+- Pre-configured hooks (revalidatePage, revalidatePost) for common use cases
+- Applied hooks to Pages and Posts collections (replaced inline implementations)
+- Hooks can be imported via @/hooks barrel export
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS
+
+Gotchas for future stories:
+- When using next/cache APIs, check Next.js 16 docs - many APIs changed signatures
+- Payload hooks have specific types: FieldHook, CollectionBeforeChangeHook, CollectionAfterChangeHook, etc.
+- React hooks (use-mobile.ts) should NOT be in the barrel export with Payload hooks (server vs client)
+- The src/hooks/ directory now contains both React hooks (*.ts with 'use' prefix) and Payload hooks
+- S21-S25 (Frontend pages) will benefit from the revalidation hooks being in place
