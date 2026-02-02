@@ -1,68 +1,125 @@
-import { Globe } from 'lucide-react'
-import Image from 'next/image'
+import type { Metadata } from 'next'
+import * as React from 'react'
 
-export default function HomePage() {
+import { Hero, type HeroData } from '@/components/Hero'
+import { RenderBlocks, type Block } from '@/blocks/RenderBlocks'
+import { getPayload } from '@/utilities'
+import { generateMeta } from '@/utilities/generateMeta'
+
+/**
+ * Page data structure matching the Pages collection
+ */
+interface PageData {
+  id: string
+  title: string
+  slug: string
+  hero?: HeroData | null
+  layout?: Block[] | null
+  meta?: {
+    title?: string | null
+    description?: string | null
+    image?: {
+      url?: string | null
+      alt?: string | null
+      width?: number | null
+      height?: number | null
+    } | string | null
+  } | null
+}
+
+/**
+ * Fetches the homepage from Payload CMS
+ * Homepage is identified by slug: 'home'
+ */
+async function getHomepage(): Promise<PageData | null> {
+  try {
+    const payload = await getPayload()
+    const pages = await payload.find({
+      collection: 'pages',
+      where: {
+        slug: {
+          equals: 'home',
+        },
+      },
+      depth: 2,
+      limit: 1,
+    })
+
+    if (pages.docs.length > 0) {
+      return pages.docs[0] as unknown as PageData
+    }
+
+    return null
+  } catch (error) {
+    console.error('Failed to fetch homepage:', error)
+    return null
+  }
+}
+
+/**
+ * Generate metadata for SEO
+ * Uses page meta fields or falls back to defaults
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await getHomepage()
+
+  if (page) {
+    return generateMeta({ doc: page })
+  }
+
+  // Fallback metadata when no homepage exists
+  return {
+    title: 'Home',
+    description: 'Welcome to our website',
+  }
+}
+
+/**
+ * Fallback content component shown when no homepage data exists
+ */
+function FallbackContent(): React.JSX.Element {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-black p-6">
-      <div className="text-center">
-        <Image
-          src="/jigjoy.svg"
-          alt="Jigjoy Logo"
-          width={150}
-          height={150}
-          className="mx-auto"
-        />
-        <p className="mt-4 text-xl text-gray-400">
-          AI-safe Next.js template
-        </p>
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
+      <h1 className="mb-4 text-4xl font-bold tracking-tight">Welcome</h1>
+      <p className="max-w-md text-lg text-muted-foreground">
+        Create a page with the slug &quot;home&quot; in the admin panel to customize this homepage.
+      </p>
+    </div>
+  )
+}
 
-        <div className="mt-12">
-          <p className="mb-6 text-lg font-medium text-white">Join our community</p>
-          <div className="flex items-center justify-center gap-6">
-            <a
-              href="https://discord.gg/xQR6DNtY"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white transition-opacity hover:opacity-80"
-              aria-label="Join our Discord"
-            >
-              <svg
-                className="h-8 w-8"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
-              </svg>
-            </a>
-            <a
-              href="https://github.com/jigjoy-io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white transition-opacity hover:opacity-80"
-              aria-label="Visit our GitHub"
-            >
-              <svg
-                className="h-8 w-8"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
-              </svg>
-            </a>
-            <a
-              href="https://jigjoy.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white transition-opacity hover:opacity-80"
-              aria-label="Visit our website"
-            >
-              <Globe className="h-8 w-8" />
-            </a>
-          </div>
-        </div>
-      </div>
+/**
+ * Homepage Component
+ *
+ * Server Component that fetches page data from Payload CMS.
+ * Renders hero section and content blocks from the page layout.
+ *
+ * Features:
+ * - Fetches homepage by slug 'home' from Pages collection
+ * - Renders hero section from page data
+ * - Renders content blocks using RenderBlocks component
+ * - Fallback content when no homepage exists
+ * - SEO metadata generation
+ */
+export default async function HomePage(): Promise<React.JSX.Element> {
+  const page = await getHomepage()
+
+  // Show fallback content if no homepage found
+  if (!page) {
+    return (
+      <main>
+        <FallbackContent />
+      </main>
+    )
+  }
+
+  return (
+    <main>
+      {/* Hero Section */}
+      <Hero hero={page.hero} />
+
+      {/* Content Blocks */}
+      <RenderBlocks blocks={page.layout} />
     </main>
   )
 }
