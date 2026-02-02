@@ -107,7 +107,14 @@ export function Header({ data }: HeaderProps): React.JSX.Element {
               priority
             />
           ) : (
-            <span className="text-xl font-bold">Logo</span>
+            <Image
+              src="/jigjoy.svg"
+              alt="Jigjoy"
+              width={32}
+              height={32}
+              className="h-8 w-8"
+              priority
+            />
           )}
         </Link>
 

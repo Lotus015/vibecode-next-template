@@ -190,7 +190,13 @@ export function Footer({ data }: FooterProps): React.JSX.Element {
                   className="h-8 w-auto"
                 />
               ) : (
-                <span className="text-xl font-bold">Logo</span>
+                <Image
+                  src="/jigjoy.svg"
+                  alt="Jigjoy"
+                  width={32}
+                  height={32}
+                  className="h-8 w-8"
+                />
               )}
             </Link>
           </div>

@@ -51,8 +51,10 @@ export function Hero({ hero }: HeroProps): React.JSX.Element | null {
 
   // High Impact Hero - Full-width background with overlay
   if (type === 'highImpact') {
+    // Use dark background when no image, light text always
+    const hasImage = !!mediaUrl
     return (
-      <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden bg-muted">
+      <section className={`relative flex min-h-[60vh] items-center justify-center overflow-hidden ${hasImage ? 'bg-muted' : 'bg-zinc-900'}`}>
         {mediaUrl && (
           <div className="absolute inset-0">
             <Image
