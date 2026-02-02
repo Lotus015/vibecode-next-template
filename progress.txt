@@ -1,0 +1,14 @@
+=== Iteration 1 - S1 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Payload CMS 3.74.0 and all required packages installed successfully
+- Peer dependency warning: @payloadcms/next and @payloadcms/ui require Next.js ^15.4.10 or >=16.1.1, but we have 16.0.10. This may need addressing in future stories if compatibility issues arise.
+- Adding "type": "module" to package.json works with existing Next.js setup
+- All packages installed: payload, @payloadcms/db-postgres, @payloadcms/next, @payloadcms/richtext-lexical, @payloadcms/ui, graphql, sharp, sass, tsx
+- Scripts added: generate:types, payload, seed
+- Build passes successfully - no changes needed to existing codebase
+- The seed script points to src/seed/index.ts which doesn't exist yet (will be created in S28)
+
+Test Results:
+- pnpm install: SUCCESS
+- pnpm build: SUCCESS (compiled in 1163.4ms)
