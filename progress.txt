@@ -486,3 +486,33 @@ Gotchas for future stories:
 - Collection-level `read/create/update/delete` accepts the full Access type (can return Where query)
 - S19 (Utility Functions) will create helper utilities that may use these access patterns
 - When creating new access functions, ensure correct typing based on where they will be used
+
+=== Iteration 19 - S19 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created five utility files in src/utilities/:
+  - getURL.ts - getServerSideURL() and getClientSideURL() for URL resolution
+  - generateMeta.ts - Generates Next.js Metadata objects from Payload document meta fields
+  - mergeOpenGraph.ts - Merges custom OpenGraph metadata with defaults
+  - formatDateTime.ts - formatDateTime() and formatRelativeTime() using Intl APIs
+  - cn.ts - Re-exports cn from @/lib/utils (avoids duplication)
+- Created index.ts to export all utilities from one location
+- IMPORTANT: Metadata['openGraph'] type from Next.js can be null/undefined
+- Used NonNullable<Metadata['openGraph']> to create a strict type for defaultOpenGraph
+- The cn utility already existed in src/lib/utils.ts (from shadcn/ui) - re-exported instead of duplicating
+- Used NEXT_PUBLIC_SERVER_URL and VERCEL_PROJECT_PRODUCTION_URL for URL resolution
+- getClientSideURL uses window.location.origin in browser, falls back to server URL on server
+- generateMeta handles both populated (object) and unpopulated (string ID) image references
+- formatDateTime uses Intl.DateTimeFormat for locale-aware formatting
+- formatRelativeTime uses Intl.RelativeTimeFormat for relative time strings (e.g., "2 days ago")
+- Removed .gitkeep from src/utilities/ since we now have real files
+
+Test Results:
+- pnpm build: SUCCESS (compiled in 5.5s)
+
+Gotchas for future stories:
+- When using Next.js Metadata types, many are nullable - use NonNullable<> for strict typing
+- S20 (Payload Hooks) may use these utilities for revalidation and slug formatting
+- S21 (Frontend Layout) will use generateMeta for page metadata
+- S22/S23 (Pages) will use generateMeta in generateMetadata functions
+- The utilities/index.ts provides a single import point: `import { cn, formatDateTime, ... } from '@/utilities'`
