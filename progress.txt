@@ -946,3 +946,48 @@ Gotchas for future stories:
 - The project builds without a database - all data fetching has try/catch with fallbacks
 - Seed script creates admin user with default credentials (must change in production)
 - S31 (Use Official Payload Rich Text Renderer) is next if needed
+
+=== Iteration 31 - S31 - 2026-02-02T21:23:00Z ===
+Status: COMPLETE
+Learnings:
+- Replaced custom Lexical rich text rendering with official @payloadcms/richtext-lexical/react package
+- Created src/components/RichText.tsx wrapper component using PayloadRichText
+- Key changes made:
+  - src/components/RichText.tsx - New wrapper using official PayloadRichText component
+  - src/blocks/Content/Component.tsx - Simplified to use RichText from @/components/RichText
+  - src/blocks/CallToAction/Component.tsx - Simplified to use RichText from @/components/RichText
+- Removed duplicate custom renderNode/renderFormattedText functions from block components (~260 lines removed)
+- The official RichText component handles all Lexical node types: text formatting, paragraphs, headings, lists, blockquotes, links, horizontal rules, tables, uploads/images, custom blocks
+- IMPORTANT: Don't import types directly from 'lexical' package - it's a nested dependency and TypeScript can't find it
+  - Solution: Define local interfaces that match Lexical's SerializedEditorState structure
+  - SerializedRootNode, SerializedLexicalNode, SerializedEditorState types defined locally
+- JSXConvertersFunction from @payloadcms/richtext-lexical/react allows customizing converters
+  - defaultConverters parameter comes from the function arg, not from import
+- Tests need to mock the official RichText component since internal converters aren't available in test environment
+  - vi.mock('@payloadcms/richtext-lexical/react', ...) with simple text extraction renderer
+  - This allows testing component structure without full Lexical rendering pipeline
+- RichTextContent interface exports from wrapper for consistent usage across components
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (117 tests in 10 files)
+- pnpm build: SUCCESS (Postgres errors handled gracefully with fallback content)
+
+Acceptance Criteria Met:
+- ✓ @payloadcms/richtext-lexical already installed (verified in package.json)
+- ✓ Import RichText from @payloadcms/richtext-lexical/react (via wrapper)
+- ✓ Update src/blocks/Content/Component.tsx to use official RichText
+- ✓ Update src/blocks/MediaBlock/Component.tsx - N/A, doesn't use rich text
+- ✓ Update any other components using custom rich text rendering (CallToAction)
+- ✓ Remove custom renderNode/renderFormattedText functions (removed from Content and CallToAction)
+- ✓ Create src/components/RichText.tsx wrapper component for consistent usage
+- ✓ Rich text renders correctly with all formatting (official component handles all types)
+- ✓ Proper TypeScript types for rich text content (RichTextContent interface exported)
+
+Gotchas for future stories:
+- Lexical types aren't directly importable - use local interface definitions
+- Official PayloadRichText expects SerializedEditorState with root property
+- The 'prose' Tailwind classes work well with the official renderer output
+- When adding custom converters, use the defaultConverters from function parameter
+- Tests must mock @payloadcms/richtext-lexical/react for proper test isolation
