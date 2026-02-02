@@ -12,3 +12,54 @@ Learnings:
 Test Results:
 - pnpm install: SUCCESS
 - pnpm build: SUCCESS (compiled in 1163.4ms)
+
+=== Iteration 2 - S2 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Moved all source directories (app, components, hooks, lib) to src/ using git mv to preserve history
+- Created Payload-specific directories: collections/, globals/, blocks/, access/, utilities/, seed/, plugins/
+- The empty features/ directory at root was removed (not tracked by git as empty)
+- Updated tsconfig.json paths: @/* now resolves to ./src/*
+- Updated components.json to point to src/app/globals.css for shadcn/ui
+- The @/ alias imports in components (like @/lib/utils) continue to work after tsconfig.json update
+- IMPORTANT: Must delete .next cache directory after directory restructure - stale type references cause build failures
+- Added .gitkeep files to empty directories to ensure they are tracked by git
+- All existing tests (13) continue to pass after restructure
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (13 tests in 3 files)
+- pnpm build: SUCCESS (compiled in 1096.8ms)
+
+Gotchas for future stories:
+- Always clear .next cache when making structural changes to the project
+- The @/* path alias must be updated in tsconfig.json when using src/ directory
+- The components.json css path must also be updated for shadcn/ui to work correctly
+
+=== Iteration 3 - S3 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/payload.config.ts with Payload CMS 3.x buildConfig
+- PostgreSQL adapter configured via DATABASE_URL environment variable (falls back to empty string for builds)
+- Lexical rich text editor configured as the default editor
+- Admin panel configured with meta title "Payload CMS Admin"
+- TypeScript types output configured to src/payload-types.ts
+- PAYLOAD_SECRET configured via environment variable with default fallback for development
+- importMap configuration set with baseDir pointing to the dirname of the config file
+- Used ESM-compatible path resolution with fileURLToPath and import.meta.url
+- Build works without database connection - Payload handles missing DATABASE_URL gracefully during build
+- All existing tests continue to pass (13 tests in 3 files)
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (13 tests in 3 files)
+- pnpm build: SUCCESS (compiled in 1095.1ms)
+
+Gotchas for future stories:
+- The payload.config.ts uses ESM path resolution (fileURLToPath + import.meta.url) since the project has "type": "module"
+- PAYLOAD_SECRET has a default value for development but should be set in production
+- DATABASE_URL can be empty during builds - Payload handles this gracefully
+- Future stories (S4) will need to integrate Payload routes into the Next.js app directory
+- Collections and globals arrays are empty - will be populated in stories S5-S12 and S17
