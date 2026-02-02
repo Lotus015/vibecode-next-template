@@ -182,3 +182,88 @@ Gotchas for future stories:
 - Draft/publish uses versions.drafts: true and _status field is auto-managed by Payload
 - Public read access for published pages uses query: { _status: { equals: 'published' } }
 - S8 (Posts) will follow similar pattern with additional author and categories relationships
+
+=== Iteration 8 - S8 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/collections/Posts/index.ts with CollectionConfig for blog posts
+- Posts collection follows directory structure like Pages (subdirectory with index.ts)
+- Fields implemented: title, slug (unique, indexed), excerpt (textarea), content (richText required)
+- featuredImage uses upload field with relationTo: 'media'
+- categories uses relationship field with relationTo: 'categories' and hasMany: true
+- author uses relationship field with relationTo: 'users' and required: true
+- publishedAt date field with dayAndTime picker appearance
+- Meta group for SEO includes title, description, image (same pattern as Pages)
+- IMPORTANT: Payload validates relationships at build time - referencing a non-existent collection causes runtime errors
+- Had to create minimal Categories collection (src/collections/Categories.ts) to satisfy Posts relationship requirement
+- This is acceptable because S9 will enhance Categories with parent/breadcrumbs - we just created the foundation
+- Reused formatSlug and revalidatePage hooks pattern from Pages collection
+- Admin preview URL returns /posts/{slug} format
+- Access control same pattern as Pages: published posts are public, authenticated can create/update, admins can delete
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (compiled in 5.8s)
+
+Gotchas for future stories:
+- When a collection references another collection, that target collection MUST exist and be registered
+- S9 (Categories) can now enhance the existing Categories collection with parent/breadcrumbs features
+- Relationship fields use `relationTo: 'collection-slug'` (lowercase) not the collection variable name
+- hasMany: true allows multiple relationships (e.g., post can have multiple categories)
+- Required relationship fields (like author) ensure data integrity
+- Upload fields are a special type of relationship - use `type: 'upload'` with `relationTo`
+
+=== Iteration 9 - S9 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Enhanced existing Categories collection (created in S8) with parent self-reference and breadcrumbs
+- parent field is a relationship to 'categories' (self-reference) for nested hierarchy
+- filterOptions on parent field prevents circular references by filtering out the current document ID
+- breadcrumbs field is an array with doc (relationship), url (text), and label (text) fields
+- breadcrumbs marked as readOnly since it will be managed by @payloadcms/plugin-nested-docs in S26
+- The nested-docs plugin isn't installed yet (S26) but the field structure is prepared
+- Updated admin defaultColumns to include 'parent' for better visibility in list view
+- Self-referencing relationships work naturally in Payload - just use relationTo: 'collection-slug'
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (compiled in 6.0s)
+
+Gotchas for future stories:
+- filterOptions callback receives { id } to filter relationship options dynamically
+- For self-references, use not_equals query to prevent circular references: { id: { not_equals: id } }
+- readOnly admin fields are useful for computed/managed fields that shouldn't be edited manually
+- S26 will install @payloadcms/plugin-nested-docs which will auto-populate breadcrumbs
+- The breadcrumbs field structure matches what the nested-docs plugin expects
+
+=== Iteration 10 - S10 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/Header/config.ts with Payload GlobalConfig for site header
+- Globals use GlobalConfig type (not CollectionConfig) and GlobalAfterChangeHook for hooks
+- Fields implemented: logo (upload to media), navItems (array with label, link), ctaButton (group)
+- ctaButton group includes label, link, and variant (select: default, secondary, outline, ghost)
+- Created src/Header/Component.tsx - client component using 'use client' for React state
+- Component uses shadcn/ui Sheet for mobile hamburger menu (responsive at md breakpoint)
+- Desktop navigation inline, mobile uses Sheet sliding panel from right
+- Logo handles both populated (object with url) and unpopulated (string ID) states
+- Used lucide-react MenuIcon for hamburger button
+- Registered Header global in payload.config.ts globals array
+- Created src/Header/index.ts for clean exports of config and component
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (13 tests in 3 files)
+- pnpm build: SUCCESS (compiled in 6.5s)
+
+Gotchas for future stories:
+- Globals use GlobalConfig and GlobalAfterChangeHook (different from Collection types)
+- Upload relationship fields can be string (ID only) or object (populated) - handle both
+- 'use client' required for components using React hooks (useState)
+- Sheet component from shadcn/ui works well for mobile navigation
+- The variant field options match shadcn/ui Button variants for consistency
+- S11 (Footer) and S12 (SiteSettings) will follow similar Global patterns
+- S21 (Frontend Layout) will fetch and pass Header data to this component
