@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { Users } from './collections/Users'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -18,8 +19,8 @@ export default buildConfig({
     },
   },
 
-  // Collections - will be added in future stories
-  collections: [],
+  // Collections
+  collections: [Users],
 
   // Globals - will be added in future stories
   globals: [],
