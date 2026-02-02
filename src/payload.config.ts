@@ -11,6 +11,7 @@ import { Categories } from './collections/Categories'
 import { Header } from './Header/config'
 import { Footer } from './Footer/config'
 import { SiteSettings } from './globals/SiteSettings'
+import { plugins } from './plugins'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -51,4 +52,7 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
+
+  // Plugins
+  plugins,
 })

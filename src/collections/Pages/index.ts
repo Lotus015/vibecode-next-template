@@ -153,40 +153,8 @@ export const Pages: CollectionConfig = {
         description: 'Add content blocks to build the page layout',
       },
     },
-    // Meta group for SEO
-    {
-      name: 'meta',
-      type: 'group',
-      label: 'SEO & Meta',
-      fields: [
-        {
-          name: 'title',
-          type: 'text',
-          label: 'Meta Title',
-          admin: {
-            description:
-              'Title for search engines and social sharing. Defaults to page title if empty.',
-          },
-        },
-        {
-          name: 'description',
-          type: 'textarea',
-          label: 'Meta Description',
-          admin: {
-            description: 'Description for search engines and social sharing.',
-          },
-        },
-        {
-          name: 'image',
-          type: 'upload',
-          label: 'Meta Image',
-          relationTo: 'media',
-          admin: {
-            description: 'Image for social sharing (Open Graph / Twitter Card)',
-          },
-        },
-      ],
-    },
+    // SEO fields are added by @payloadcms/plugin-seo
+    // The plugin adds: meta.title, meta.description, meta.image
   ],
 }
 

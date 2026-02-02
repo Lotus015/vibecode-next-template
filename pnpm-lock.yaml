@@ -17,6 +17,15 @@ importers:
       '@payloadcms/next':
         specifier: ^3.74.0
         version: 3.74.0(@types/react@19.2.7)(graphql@16.12.0)(monaco-editor@0.55.1)(next@16.1.6(@babel/core@7.28.5)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.97.3))(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
+      '@payloadcms/plugin-nested-docs':
+        specifier: ^3.74.0
+        version: 3.74.0(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))
+      '@payloadcms/plugin-redirects':
+        specifier: ^3.74.0
+        version: 3.74.0(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))
+      '@payloadcms/plugin-seo':
+        specifier: ^3.74.0
+        version: 3.74.0(@types/react@19.2.7)(monaco-editor@0.55.1)(next@16.1.6(@babel/core@7.28.5)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.97.3))(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
       '@payloadcms/richtext-lexical':
         specifier: ^3.74.0
         version: 3.74.0(@faceless-ui/modal@3.0.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@faceless-ui/scroll-info@2.0.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@payloadcms/next@3.74.0(@types/react@19.2.7)(graphql@16.12.0)(monaco-editor@0.55.1)(next@16.1.6(@babel/core@7.28.5)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.97.3))(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3))(@types/react@19.2.7)(monaco-editor@0.55.1)(next@16.1.6(@babel/core@7.28.5)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.97.3))(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)(yjs@13.6.29)
@@ -1452,6 +1461,23 @@ packages:
       graphql: ^16.8.1
       next: ^15.4.10 || >=16.1.1-canary.35 <16.2.0 || ^16.2.0
       payload: 3.74.0
+
+  '@payloadcms/plugin-nested-docs@3.74.0':
+    resolution: {integrity: sha512-aRT5QideKyxdGC3HIsgsKolDCbhNeVxTvjj0X7m+Z+VUmBhvgQXeBtcFUT29eGGr5DV2Fcw7ggXyNK5cDrFxmA==}
+    peerDependencies:
+      payload: 3.74.0
+
+  '@payloadcms/plugin-redirects@3.74.0':
+    resolution: {integrity: sha512-llO8ZwdKQi0CIr+aV5snKgrvWHv3HjamVl0nCppKzBVag82f1uirImWGijjvikJ3EqSS8CIkvspyGe/XHy2CkA==}
+    peerDependencies:
+      payload: 3.74.0
+
+  '@payloadcms/plugin-seo@3.74.0':
+    resolution: {integrity: sha512-jzR02Yc6EmZaJBXFCIHitp3XTRx4MGKD2P62IVUYDsH6BdeJ6fdB4CevokovPpwdfxs7CX/cXKRhHBfbs/w71g==}
+    peerDependencies:
+      payload: 3.74.0
+      react: ^19.0.1 || ^19.1.2 || ^19.2.1
+      react-dom: ^19.0.1 || ^19.1.2 || ^19.2.1
 
   '@payloadcms/richtext-lexical@3.74.0':
     resolution: {integrity: sha512-kauysxEe6y5IhZA/Kcr3q8T4e3j6BuvqJgxEa72yR11IJUI0mE+6Sfqr1SjEUgFPuz8xDlLKVtqsalhvkOCLUQ==}
@@ -6475,6 +6501,29 @@ snapshots:
       - monaco-editor
       - react
       - react-dom
+      - supports-color
+      - typescript
+
+  '@payloadcms/plugin-nested-docs@3.74.0(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))':
+    dependencies:
+      payload: 3.74.0(graphql@16.12.0)(typescript@5.9.3)
+
+  '@payloadcms/plugin-redirects@3.74.0(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))':
+    dependencies:
+      '@payloadcms/translations': 3.74.0
+      payload: 3.74.0(graphql@16.12.0)(typescript@5.9.3)
+
+  '@payloadcms/plugin-seo@3.74.0(@types/react@19.2.7)(monaco-editor@0.55.1)(next@16.1.6(@babel/core@7.28.5)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.97.3))(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)':
+    dependencies:
+      '@payloadcms/translations': 3.74.0
+      '@payloadcms/ui': 3.74.0(@types/react@19.2.7)(monaco-editor@0.55.1)(next@16.1.6(@babel/core@7.28.5)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(sass@1.97.3))(payload@3.74.0(graphql@16.12.0)(typescript@5.9.3))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
+      payload: 3.74.0(graphql@16.12.0)(typescript@5.9.3)
+      react: 19.2.1
+      react-dom: 19.2.1(react@19.2.1)
+    transitivePeerDependencies:
+      - '@types/react'
+      - monaco-editor
+      - next
       - supports-color
       - typescript
 
