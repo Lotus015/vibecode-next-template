@@ -1,53 +1,9 @@
-import type { CollectionConfig, CollectionAfterChangeHook, FieldHook } from 'payload'
+import type { CollectionConfig } from 'payload'
 import { Content } from '@/blocks/Content/config'
 import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { CallToAction } from '@/blocks/CallToAction/config'
 import { authenticated, authenticatedOrPublished, admins } from '@/access'
-
-/**
- * Format slug from title
- * Converts title to URL-friendly slug (lowercase, hyphens, no special chars)
- */
-const formatSlug: FieldHook = ({ value, data }) => {
-  // If slug is manually provided, use it (but format it)
-  if (typeof value === 'string' && value.length > 0) {
-    return value
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '')
-  }
-
-  // If no slug, generate from title
-  if (data?.title && typeof data.title === 'string') {
-    return data.title
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '')
-  }
-
-  return value
-}
-
-/**
- * Revalidate path hook
- * Triggers Next.js revalidation when a page is updated
- */
-const revalidatePage: CollectionAfterChangeHook = async ({
-  doc,
-  req: { payload },
-  operation,
-}) => {
-  if (operation === 'create' || operation === 'update') {
-    // Log revalidation (actual revalidation requires Next.js revalidatePath)
-    payload.logger.info(`Revalidating page: ${doc.slug}`)
-  }
-
-  return doc
-}
+import { formatSlug, revalidatePage, populatePublishedAt } from '@/hooks'
 
 /**
  * Pages Collection
@@ -77,8 +33,9 @@ export const Pages: CollectionConfig = {
       return null
     },
   },
-  // Hooks for slug generation and revalidation
+  // Hooks for slug generation, publishedAt auto-population, and revalidation
   hooks: {
+    beforeChange: [populatePublishedAt],
     afterChange: [revalidatePage],
   },
   access: {
