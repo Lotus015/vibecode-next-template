@@ -3,12 +3,12 @@ import type { CollectionConfig } from 'payload'
 /**
  * Categories Collection
  *
- * Collection for organizing posts into categories.
- * This is a minimal implementation for S8 (Posts) relationship support.
- * Full implementation with parent/breadcrumbs will be added in S9.
+ * Collection for organizing posts into categories with nested hierarchy support.
  *
  * Features:
  * - Title and unique slug
+ * - Parent self-reference for nested categories
+ * - Breadcrumbs field for nested docs hierarchy
  * - Proper indexing on slug
  */
 export const Categories: CollectionConfig = {
@@ -19,7 +19,7 @@ export const Categories: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'slug', 'parent', 'updatedAt'],
   },
   access: {
     // Anyone can read categories
@@ -48,6 +48,51 @@ export const Categories: CollectionConfig = {
       admin: {
         description: 'URL-friendly identifier',
       },
+    },
+    {
+      name: 'parent',
+      type: 'relationship',
+      relationTo: 'categories',
+      label: 'Parent Category',
+      admin: {
+        description: 'Select a parent category for nesting',
+      },
+      // Filter out the current document to prevent circular references
+      filterOptions: ({ id }) => {
+        if (!id) return true
+        return {
+          id: {
+            not_equals: id,
+          },
+        }
+      },
+    },
+    {
+      name: 'breadcrumbs',
+      type: 'array',
+      label: 'Breadcrumbs',
+      admin: {
+        readOnly: true,
+        description: 'Auto-generated breadcrumb trail (managed by nested-docs plugin)',
+      },
+      fields: [
+        {
+          name: 'doc',
+          type: 'relationship',
+          relationTo: 'categories',
+          label: 'Category',
+        },
+        {
+          name: 'url',
+          type: 'text',
+          label: 'URL',
+        },
+        {
+          name: 'label',
+          type: 'text',
+          label: 'Label',
+        },
+      ],
     },
   ],
 }
