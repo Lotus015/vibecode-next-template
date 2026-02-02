@@ -719,3 +719,44 @@ Gotchas for future stories:
 - RichText component can be reused wherever rich text content needs rendering
 - PostCard component works well for related posts display
 - S31 could enhance RichText with official @payloadcms/richtext-lexical/react renderer
+
+=== Iteration 26 - S26 - 2026-02-02 20:52:00 ===
+Status: COMPLETE
+Learnings:
+- Installed @payloadcms/plugin-seo, @payloadcms/plugin-redirects, @payloadcms/plugin-nested-docs packages
+- Created src/plugins/index.ts exporting plugins array for registration in payload.config.ts
+- SEO plugin configuration:
+  - Applied to 'pages' and 'posts' collections
+  - Uses generateTitle and generateURL functions for auto-generation
+  - Uses 'media' as uploadsCollection for meta images
+  - tabbedUI: true for better admin experience
+- Redirects plugin configuration:
+  - Applied to 'pages' and 'posts' for redirect targets
+  - Creates auto-generated Redirects collection
+  - Customized labels and admin group placement
+- Nested Docs plugin configuration:
+  - Applied to 'categories' collection for hierarchical structure
+  - Uses existing 'parent' and 'breadcrumbs' fields from Categories collection
+  - generateLabel and generateURL functions for breadcrumb display
+- IMPORTANT: SEO plugin adds 'meta' fields automatically - must remove existing 'meta' groups from Pages/Posts to avoid duplicate field errors
+- Used a generic SeoDocument interface instead of importing from payload-types.ts (which is auto-generated and may not exist during builds)
+- Build succeeds without database - Postgres connection errors during static generation are handled gracefully by try/catch
+- All acceptance criteria met:
+  - ✓ @payloadcms/plugin-seo installed and configured
+  - ✓ @payloadcms/plugin-redirects installed and configured
+  - ✓ @payloadcms/plugin-nested-docs installed and configured
+  - ✓ src/plugins/index.ts exports plugins array
+  - ✓ Plugins registered in payload.config.ts
+  - ✓ SEO fields added to Pages and Posts collections (via plugin)
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (Postgres errors handled gracefully)
+
+Gotchas for future stories:
+- Don't import from payload-types.ts in plugin config - file is auto-generated and may not exist
+- SEO plugin adds meta.title, meta.description, meta.image - remove duplicate fields from collections
+- Plugins are registered via the 'plugins' array in buildConfig
+- Nested Docs plugin expects parentFieldSlug and breadcrumbsFieldSlug to match existing field names
+- The Redirects collection is auto-created by the plugin - no need to define manually
