@@ -99,3 +99,86 @@ Gotchas for future stories:
 - withPayload wrapper is required for Next.js config
 - Next.js version must be 16.1.0+ for Payload CMS compatibility
 - pg package must be explicitly installed for PostgreSQL adapter
+
+=== Iteration 5 - S5 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/collections/Users/index.ts with Payload CollectionConfig
+- Setting `auth: true` automatically adds email and password fields with authentication handling
+- Role field implemented as select with options: admin, editor, user (defaultValue: 'user')
+- Admin panel access control uses `admin.hidden` callback to hide from non-admin users
+- Collection-level access control uses `access` object with read/create/update/delete/admin keys
+- Access control functions receive `({ req: { user } })` to check authenticated user
+- For conditional access (e.g., user can only read/update themselves), return a query object like `{ id: { equals: user.id } }`
+- Field-level access control allows restricting who can update specific fields (e.g., only admins can change roles)
+- TypeScript types are properly inferred from CollectionConfig - no manual type export needed
+- Import Users collection and add to collections array in payload.config.ts
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (13 tests in 3 files)
+- pnpm build: SUCCESS (compiled in 6.4s)
+
+Gotchas for future stories:
+- When `auth: true`, email and password fields are automatically provided - don't add them manually
+- Access control queries use Payload's query syntax (e.g., `{ field: { equals: value } }`)
+- The `admin` access key controls access to the admin panel for this collection specifically
+- Future collections (Media, Pages, Posts, Categories) will follow similar patterns
+- S18 will create reusable access control functions - for now, inline functions work fine
+
+=== Iteration 6 - S6 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/collections/Media.ts with Payload CollectionConfig for file uploads
+- Upload configuration uses `upload` key with mimeTypes, imageSizes, and adminThumbnail
+- mimeTypes filter restricts uploads to images: jpeg, png, gif, webp, svg+xml
+- imageSizes array defines responsive image sizes with name, width, height, position
+- Three image sizes configured: thumbnail (400x300), card (768x576), hero (1920x1080)
+- position: 'centre' crops from center when resizing
+- adminThumbnail: 'thumbnail' tells admin panel which size to use in list views
+- Fields added: alt (text, required), caption (text, optional)
+- Access control: public read, authenticated create/update, admin-only delete
+- Media collection is simple (single file) - no subdirectory like Users collection
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (compiled in 6.0s)
+
+Gotchas for future stories:
+- Upload collections need `upload` config object (not `auth` like Users)
+- imageSizes names become available as sizes[name].url in the Media document
+- The sharp package (installed in S1) handles image processing automatically
+- Future blocks (S14 MediaBlock) will reference this collection for images
+- S17 will register all collections including Media in payload.config.ts (already done here)
+
+=== Iteration 7 - S7 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created src/collections/Pages/index.ts with CollectionConfig for static pages
+- Pages collection follows directory structure like Users (subdirectory with index.ts)
+- Fields implemented: title, slug (unique, indexed), publishedAt, hero group, layout blocks, meta group
+- Hero group includes type (select), heading, subheading, media (upload to Media), richText
+- Layout field is blocks array - currently empty, will be populated as blocks are created in S13-S16
+- Meta group for SEO includes title, description, image (upload to Media)
+- Slug generation hook using FieldHook on beforeValidate - converts title to URL-friendly slug
+- Revalidation hook using CollectionAfterChangeHook - logs revalidation (actual Next.js revalidatePath requires runtime)
+- Admin preview function returns URL based on slug (handles 'home' special case)
+- Versions with drafts enabled for draft/publish workflow
+- Access control: published pages are public (using _status equals 'published' query)
+- Admin condition callbacks hide/show fields based on hero type selection
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm build: SUCCESS (compiled in 5.7s)
+
+Gotchas for future stories:
+- The layout blocks array is empty - will be populated as Content, MediaBlock, CallToAction blocks are created
+- FieldHook for slug uses beforeValidate to format before save
+- For conditional field visibility in admin, use admin.condition callback with siblingData
+- Upload fields use relationTo to specify the upload collection (e.g., 'media')
+- Draft/publish uses versions.drafts: true and _status field is auto-managed by Payload
+- Public read access for published pages uses query: { _status: { equals: 'published' } }
+- S8 (Posts) will follow similar pattern with additional author and categories relationships
