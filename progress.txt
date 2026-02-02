@@ -806,3 +806,52 @@ Gotchas for future stories:
 - Zod's .url() validator rejects empty strings - use .optional() for optional URLs
 - VERCEL_PROJECT_PRODUCTION_URL doesn't include protocol - add https:// when using
 - S29 (Update Tests) should add more comprehensive tests for Payload components
+
+=== Iteration 28 - S28 - 2026-02-02 21:03:00 ===
+Status: COMPLETE
+Learnings:
+- Created src/seed/index.ts - comprehensive idempotent seed script for Payload CMS
+- Uses Payload Local API via `getPayload({ config })` from 'payload'
+- Seeds in order: admin user → categories → pages → posts → Header → Footer → SiteSettings
+- Idempotency achieved by checking for existing data before creating:
+  - Users: check by email
+  - Categories/Pages/Posts: check by slug
+  - Globals: check if already configured (has navItems, columns, or custom siteName)
+- IMPORTANT: PostgreSQL uses numeric IDs (number type), not string IDs
+  - Changed adminUserId and categoryIds from string to number types
+  - Removed String() conversion, use IDs directly
+- Lexical rich text format requires specific structure:
+  - Must have root.type, root.format, root.indent, root.version, root.direction, root.children
+  - Children must have type, version, and additional type-specific fields
+  - Created RichTextContent interface matching Payload's expected type
+- Content block 'columns' field uses '1', '2', '3' values (not 'one', 'two', 'three')
+- Globals use findGlobal/updateGlobal methods (not find/create like collections)
+- Script exits with process.exit(0) on success, process.exit(1) on failure
+- Removed .gitkeep from src/seed/ since we now have real content
+- The payload-types.ts file is auto-generated and was committed as part of this story
+
+Test Results:
+- pnpm lint: SUCCESS
+- pnpm typecheck: SUCCESS
+- pnpm test: SUCCESS (15 tests in 3 files)
+- pnpm build: SUCCESS (Postgres errors handled gracefully with fallback content)
+
+Acceptance Criteria Met:
+- ✓ src/seed/index.ts main seed script
+- ✓ Seeds admin user (admin@example.com)
+- ✓ Seeds sample pages (Home, About)
+- ✓ Seeds sample posts (3 posts)
+- ✓ Seeds sample categories (Technology, Design, Business)
+- ✓ Seeds Header, Footer, SiteSettings globals
+- ✓ Idempotent - can run multiple times safely
+- ✓ Uses Payload Local API
+- ✓ Runnable via pnpm seed (script already existed in package.json from S1)
+
+Gotchas for future stories:
+- Payload with PostgreSQL uses numeric IDs, not string IDs
+- Rich text content must follow Lexical's exact structure - use typed interfaces
+- Global slugs are kebab-case in Payload: 'site-settings' not 'siteSettings'
+- Seed script requires a running database - won't work during static builds
+- To run seed: start PostgreSQL, set DATABASE_URL, then run pnpm seed
+- Admin credentials: admin@example.com / admin123 (change in production!)
+- S29 (Update Tests) is next
