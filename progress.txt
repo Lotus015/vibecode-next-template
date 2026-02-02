@@ -458,3 +458,31 @@ Gotchas for future stories:
 - When a collection/global has associated components (Header, Footer), use directory structure
 - Payload's type inference handles array typing automatically through buildConfig
 - The db adapter (postgresAdapter) gracefully handles missing DATABASE_URL during builds
+
+=== Iteration 18 - S18 - 2026-02-02 ===
+Status: COMPLETE
+Learnings:
+- Created four reusable access control functions in src/access/:
+  - authenticated.ts - requires any authenticated user
+  - authenticatedOrPublished.ts - returns true for authenticated users, or query for published content
+  - admins.ts - requires admin role
+  - adminsOrSelf.ts - admins get full access, others restricted to their own data
+- IMPORTANT: The `Access` type from Payload can return `boolean | Where | Promise<boolean | Where>`
+- IMPORTANT: The `admin` access key on collections has a DIFFERENT type: only `boolean | Promise<boolean>` (no Where query objects allowed)
+- IMPORTANT: Field-level access (`FieldAccess` type) also only allows `boolean | Promise<boolean>`
+- Created `adminsAdminAccess` function with correct typing for `admin` and field-level access
+- Both `adminsAdminAccess` and `admins` have the same implementation (check role === 'admin')
+- But they have different type signatures to satisfy TypeScript
+- Applied access functions to Users, Media, Pages, and Posts collections
+- Removed .gitkeep from src/access/ since we now have real files
+
+Test Results:
+- pnpm build: SUCCESS (compiled in 5.7s)
+
+Gotchas for future stories:
+- Always check if an access position requires boolean-only return type
+- Collection-level `admin` access key requires boolean-only (use adminsAdminAccess)
+- Field-level `access.update/read/create` requires boolean-only (use adminsAdminAccess or inline)
+- Collection-level `read/create/update/delete` accepts the full Access type (can return Where query)
+- S19 (Utility Functions) will create helper utilities that may use these access patterns
+- When creating new access functions, ensure correct typing based on where they will be used
